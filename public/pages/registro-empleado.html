@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Paraíso · Registro de empleado</title>
+    <link rel="stylesheet" href="/public/assets/css/app.css" />
+    <link rel="stylesheet" href="/public/assets/css/form.css" />
+  </head>
+  <body>
+    <!-- Barra superior -->
+    <nav
+      class="topbar"
+      style="
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+      "
+    >
+      <div class="brand">
+        <div class="brand-badge">H</div>
+        <div>Hotel&nbsp;Paraíso</div>
+      </div>
+      <div class="nav-links">
+        <a href="/public/index.html">Inicio</a>
+        <a href="/public/pages/menu-completo.html">Menú</a>
+        <a href="/public/pages/consultas.html">Consultas</a>
+      </div>
+    </nav>
+
+    <!-- Fondo con tarjeta central -->
+    <header
+      class="hero--glass"
+      style="
+        --hero-bg: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg');
+      "
+    >
+      <div class="glass-card">
+        <h1>Registrar Empleado</h1>
+
+        <!-- Enviará el nombre del área (texto) o, si tu tabla usa id_area, el backend lo resolverá -->
+        <form
+          method="post"
+          action="/backend/empleados/crear.php"
+          class="form-grid"
+        >
+          <div class="field">
+            <label for="nombre">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              name="nombre"
+              placeholder="Ej. Juan"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="apellidoP">Apellido paterno</label>
+            <input
+              type="text"
+              id="apellidoP"
+              name="apellidoP"
+              placeholder="Ej. Pérez"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="apellidoM">Apellido materno</label>
+            <input
+              type="text"
+              id="apellidoM"
+              name="apellidoM"
+              placeholder="Ej. López"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="telefono">Teléfono</label>
+            <input
+              type="tel"
+              id="telefono"
+              name="telefono"
+              placeholder="Ej. 5512345678"
+              required
+            />
+          </div>
+
+          <!-- Aquí cambiamos Input -> Select (se llena desde la BD) -->
+          <div class="field">
+            <label for="area">Área</label>
+            <select id="area" name="area" required>
+              <option value="">Cargando áreas…</option>
+            </select>
+            <div class="hint">Elige un área existente de la base de datos.</div>
+          </div>
+
+          <div class="field">
+            <label for="turno">Turno</label>
+            <select id="turno" name="turno" required>
+              <option value="">Selecciona turno</option>
+              <option value="1">Mañana</option>
+              <option value="2">Tarde</option>
+              <option value="3">Noche</option>
+            </select>
+            <div class="hint">
+              Se guarda 1/2/3. Si tu tabla usa texto, el backend puede mapearlo.
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Registrar</button>
+            <button type="button" class="btn-danger" onclick="history.back()">
+              Regresar
+            </button>
+          </div>
+        </form>
+      </div>
+    </header>
+
+    <footer class="footer">
+      © <span id="y"></span> Hotel Paraíso — Registro de empleado
+    </footer>
+
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      // Cargar opciones de áreas desde el backend
+      (async function cargarAreas() {
+        const $sel = document.getElementById("area");
+        try {
+          const res = await fetch("/backend/areas/opciones.php", {
+            headers: { Accept: "text/html" },
+          });
+          if (!res.ok) throw new Error("No se pudo cargar áreas");
+          const optionsHtml = await res.text();
+          $sel.innerHTML =
+            optionsHtml || '<option value="">(Sin áreas registradas)</option>';
+        } catch (e) {
+          $sel.innerHTML = '<option value="">Error al cargar áreas</option>';
+        }
+      })();
+    </script>
+  </body>
+</html>

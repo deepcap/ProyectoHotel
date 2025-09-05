@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Paraíso · Alta habitación</title>
+    <link rel="stylesheet" href="/public/assets/css/app.css" />
+    <link rel="stylesheet" href="/public/assets/css/form.css" />
+  </head>
+  <body>
+    <!-- Barra superior -->
+    <nav
+      class="topbar"
+      style="
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+      "
+    >
+      <div class="brand">
+        <div class="brand-badge">H</div>
+        <div>Hotel&nbsp;Paraíso</div>
+      </div>
+      <div class="nav-links">
+        <a href="/public/index.html">Inicio</a>
+        <a href="/public/pages/menu-completo.html">Menú</a>
+        <a href="/public/pages/consultas.html">Consultas</a>
+      </div>
+    </nav>
+
+    <!-- Fondo con tarjeta central -->
+    <header
+      class="hero--glass"
+      style="
+        --hero-bg: url('https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg');
+      "
+    >
+      <div class="glass-card">
+        <h1>Registrar Habitación</h1>
+
+        <form
+          method="post"
+          action="/backend/habitaciones/crear.php"
+          class="form-grid"
+        >
+          <div class="field">
+            <label for="numero">Número de habitación</label>
+            <input
+              type="number"
+              id="numero"
+              name="numero"
+              placeholder="Ej. 101"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="precio">Precio (MXN)</label>
+            <input
+              type="number"
+              step="0.01"
+              id="precio"
+              name="precio"
+              placeholder="Ej. 1200"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="tipo">Tipo de habitación</label>
+            <select id="tipo" name="tipo" required>
+              <option value="">Selecciona tipo</option>
+              <option value="Sencilla">Sencilla</option>
+              <option value="Doble">Doble</option>
+              <option value="Suite">Suite</option>
+              <option value="Familiar">Familiar</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" required>
+              <option value="">Selecciona estado</option>
+              <option value="Disponible">Disponible</option>
+              <option value="Ocupada">Ocupada</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="personas">Cantidad de personas</label>
+            <input
+              type="number"
+              id="personas"
+              name="personas"
+              min="1"
+              placeholder="Ej. 2"
+              required
+            />
+          </div>
+
+          <!-- Check-in / Check-out (para reservar más adelante) -->
+          <div class="form-grid two">
+            <div class="field">
+              <label for="entrada">Fecha de entrada (check-in)</label>
+              <input type="date" id="entrada" name="entrada" />
+              <div class="hint">
+                Opcional por ahora: se usará para la reservación.
+              </div>
+            </div>
+            <div class="field">
+              <label for="salida">Fecha de salida (check-out)</label>
+              <input type="date" id="salida" name="salida" />
+              <div class="hint">
+                Opcional por ahora: se usará para la reservación.
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Registrar</button>
+            <button type="button" class="btn-danger" onclick="history.back()">
+              Regresar
+            </button>
+          </div>
+        </form>
+      </div>
+    </header>
+
+    <footer class="footer">
+      © <span id="y"></span> Hotel Paraíso — Alta habitación
+    </footer>
+
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>

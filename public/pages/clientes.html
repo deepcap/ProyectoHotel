@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Paraíso · Registrar Cliente</title>
+    <link rel="stylesheet" href="/public/assets/css/app.css" />
+    <link rel="stylesheet" href="/public/assets/css/form.css" />
+    <style>
+      /* Ajustes sutiles para esta página (todo lo demás viene de app.css/form.css) */
+      .helper {
+        margin-top: 6px;
+        font-size: 12px;
+        color: #64748b;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar -->
+    <nav
+      class="topbar"
+      style="
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+      "
+    >
+      <div class="brand">
+        <div class="brand-badge">H</div>
+        <div>Hotel&nbsp;Paraíso</div>
+      </div>
+      <div class="nav-links">
+        <a href="/public/index.html">Inicio</a>
+        <a href="/public/pages/menu-completo.html">Menú</a>
+        <a href="/public/pages/consultas.html">Consultas</a>
+      </div>
+    </nav>
+
+    <!-- Portada tipo “glass” igual que alta-empleado -->
+    <header
+      class="hero--glass"
+      style="
+        --hero-bg: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg');
+      "
+    >
+      <div class="glass-card" style="width: min(100%, 760px); padding: 22px">
+        <div
+          class="hero-card hero-card--center"
+          style="text-align: center; margin-bottom: 12px"
+        >
+          <h1 style="margin: 0">Registrar Cliente</h1>
+        </div>
+
+        <!-- Formulario -->
+        <form
+          class="form-grid"
+          method="post"
+          action="/backend/clientes/crear.php"
+          id="frmCliente"
+        >
+          <div class="field">
+            <label for="nombre">Nombre</label>
+            <input id="nombre" name="nombre" placeholder="Ej. Juan" required />
+          </div>
+
+          <div class="field">
+            <label for="ap_pat">Apellido paterno</label>
+            <input
+              id="ap_pat"
+              name="apellido_paterno"
+              placeholder="Ej. Pérez"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="ap_mat">Apellido materno</label>
+            <input
+              id="ap_mat"
+              name="apellido_materno"
+              placeholder="Ej. López"
+            />
+          </div>
+
+          <div class="field">
+            <label for="tel">Teléfono</label>
+            <input
+              id="tel"
+              name="telefono"
+              placeholder="Ej. 5512345678"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="correo">Correo</label>
+            <input
+              id="correo"
+              type="email"
+              name="correo"
+              placeholder="ejemplo@correo.com"
+            />
+            <div class="helper">
+              Opcional. Se guardará en la columna <strong>correo</strong> de la
+              tabla <strong>Cliente</strong>.
+            </div>
+          </div>
+
+          <div
+            class="actions"
+            style="
+              display: flex;
+              gap: 12px;
+              justify-content: space-between;
+              margin-top: 6px;
+            "
+          >
+            <button type="submit" class="btn btn-primary">Registrar</button>
+            <a href="/public/pages/menu-completo.html" class="btn btn-secondary"
+              >Regresar</a
+            >
+          </div>
+        </form>
+      </div>
+    </header>
+
+    <footer class="footer">
+      © <span id="y"></span> Hotel Paraíso — Clientes
+    </footer>
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      // Evita doble envío accidental
+      const frm = document.getElementById("frmCliente");
+      frm.addEventListener("submit", () => {
+        const btn = frm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        setTimeout(() => (btn.disabled = false), 2000);
+      });
+    </script>
+
+    <!-- Si quieres proteger con el guard de login demo, descomenta: -->
+    <!-- <script src="/public/assets/js/auth.js"></script> -->
+  </body>
+</html>

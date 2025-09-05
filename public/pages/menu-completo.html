@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Paraíso · Menú completo</title>
+    <link rel="stylesheet" href="/public/assets/css/app.css" />
+  </head>
+  <body>
+    <!-- Barra superior -->
+    <nav
+      class="topbar"
+      style="
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+      "
+    >
+      <div class="brand">
+        <div class="brand-badge">H</div>
+        <div>Hotel&nbsp;Paraíso</div>
+      </div>
+      <div class="nav-links">
+        <a href="/public/index.html">Inicio</a>
+        <a href="/public/pages/consultas.html">Consultas</a>
+        <a href="#" onclick="logout()">Salir</a>
+      </div>
+    </nav>
+
+    <!-- Portada -->
+    <header
+      class="hero"
+      style="
+        --hero-bg: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg');
+      "
+    >
+      <div class="hero-card hero-card--center">
+        <h1>Menú principal</h1>
+        <p>
+          Elige una acción para administrar el hotel: registra habitaciones, da
+          de alta empleados, consulta información o genera reportes.
+        </p>
+        <div class="actions actions--center" style="gap: 16px; flex-wrap: wrap">
+          <button
+            class="btn-primary"
+            onclick="location.href='/public/pages/habitacion.html'"
+          >
+            Alta habitación
+          </button>
+          <button
+            class="btn-primary"
+            onclick="location.href='/public/pages/registro-empleado.html'"
+          >
+            Alta empleado
+          </button>
+          <button
+            class="btn-primary"
+            onclick="location.href='/public/pages/consultas.html'"
+          >
+            Consultas
+          </button>
+          <!-- NUEVO botón Reportes -->
+          <button
+            class="btn-primary"
+            onclick="location.href='/public/pages/reportes.html'"
+          >
+            Reportes
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Accesos rápidos -->
+    <section class="section">
+      <h2>Accesos rápidos</h2>
+      <div class="grid">
+        <article
+          class="card"
+          onclick="location.href='/public/pages/habitacion.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg"
+            alt="Habitaciones"
+          />
+          <div class="body">
+            <h3 class="title">Registrar habitación</h3>
+            <p class="meta">
+              Agrega nuevas habitaciones con tipo, estado, capacidad y precio.
+            </p>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          onclick="location.href='/public/pages/registro-empleado.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"
+            alt="Empleados"
+          />
+          <div class="body">
+            <h3 class="title">Registrar empleado</h3>
+            <p class="meta">Da de alta personal y asigna área y turno.</p>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          onclick="location.href='/public/pages/consultas.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg"
+            alt="Consultas"
+          />
+          <div class="body">
+            <h3 class="title">Consultas</h3>
+            <p class="meta">
+              Revisa listados (p.ej. habitaciones) y gestiona
+              edición/eliminación.
+            </p>
+          </div>
+        </article>
+
+        <!-- NUEVA tarjeta Reportes -->
+        <article
+          class="card"
+          onclick="location.href='/public/pages/reportes.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg"
+            alt="Reportes"
+          />
+          <div class="body">
+            <h3 class="title">Reportes</h3>
+            <p class="meta">
+              Descarga en PDF las reservaciones, cobros y totales por fecha.
+            </p>
+          </div>
+        </article>
+
+        <article
+          class="card"
+          onclick="location.href='/public/index.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg"
+            alt="Inicio"
+          />
+          <div class="body">
+            <h3 class="title">Volver al inicio</h3>
+            <p class="meta">Regresa a la página principal del sitio.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">© <span id="y"></span> Hotel Paraíso — Menú</footer>
+
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+    </script>
+    <!-- Guard demo de login -->
+    <script src="/public/assets/js/auth.js"></script>
+  </body>
+</html>

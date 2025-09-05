@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Paraíso · Reservaciones</title>
+
+    <!-- Estilos base que ya usas -->
+    <link rel="stylesheet" href="/public/assets/css/app.css" />
+    <link rel="stylesheet" href="/public/assets/css/form.css" />
+    <!-- Estilos específicos de reservaciones -->
+    <link rel="stylesheet" href="/public/assets/css/reservas.css" />
+  </head>
+  <body>
+    <!-- Topbar -->
+    <nav
+      class="topbar"
+      style="
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+      "
+    >
+      <div class="brand">
+        <div class="brand-badge">H</div>
+        <div>Hotel&nbsp;Paraíso</div>
+      </div>
+      <div class="nav-links">
+        <a href="/public/index.html">Inicio</a>
+        <a href="/public/pages/menu-completo.html">Menú</a>
+      </div>
+    </nav>
+
+    <!-- Hero “glass” -->
+    <header
+      class="hero--glass"
+      style="
+        --hero-bg: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg');
+      "
+    >
+      <div class="glass-card glass-wide">
+        <div class="hero-card hero-card--center hero-left">
+          <h1 style="margin: 0 0 4px">Reservaciones</h1>
+          <p class="muted" style="margin: 0">
+            Crea, consulta y administra reservaciones. Disponibilidad en tiempo
+            real y calendario.
+          </p>
+          <div class="kpis">
+            <div class="kpi">
+              <div class="muted">Ocupación hoy</div>
+              <div class="kpi-val">— %</div>
+            </div>
+            <div class="kpi">
+              <div class="muted">Entradas hoy</div>
+              <div class="kpi-val">—</div>
+            </div>
+            <div class="kpi">
+              <div class="muted">Salidas hoy</div>
+              <div class="kpi-val">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-reservar">
+            Reservar
+          </button>
+          <button class="tab-btn" data-tab="tab-listado">Listado</button>
+          <button class="tab-btn" data-tab="tab-disponibilidad">
+            Disponibilidad
+          </button>
+          <button class="tab-btn" data-tab="tab-calendario">Calendario</button>
+          <div class="right">
+            <a class="btn btn-secondary" href="/public/pages/menu-completo.html"
+              >← Menú</a
+            >
+          </div>
+        </div>
+
+        <!-- ====== TAB: RESERVAR ====== -->
+        <section id="tab-reservar" class="section-card">
+          <div class="grid-2">
+            <form class="form-grid" id="frmReservar" autocomplete="off">
+              <!-- Identificación -->
+              <div class="field">
+                <label>Cliente</label>
+                <select id="r_cliente" required>
+                  <option value="">Cargando clientes…</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Habitación</label>
+                <select id="r_habitacion" required>
+                  <option value="">Cargando habitaciones…</option>
+                </select>
+              </div>
+
+              <!-- Fechas -->
+              <div class="grid-2" style="grid-column: 1/-1">
+                <div class="field">
+                  <label>Check-in</label>
+                  <input type="date" id="r_checkin" required />
+                </div>
+                <div class="field">
+                  <label>Check-out</label>
+                  <input type="date" id="r_checkout" required />
+                </div>
+              </div>
+
+              <!-- Servicios extra -->
+              <fieldset class="extras" style="grid-column: 1/-1">
+                <legend>Servicios extra (opcional)</legend>
+                <div class="extras-grid">
+                  <label class="extra-item">
+                    <input
+                      type="checkbox"
+                      class="extra"
+                      data-nombre="Desayuno"
+                      data-precio="180"
+                    />
+                    <span>Desayuno buffet</span>
+                    <small class="precio">$180</small>
+                  </label>
+                  <label class="extra-item">
+                    <input
+                      type="checkbox"
+                      class="extra"
+                      data-nombre="Spa"
+                      data-precio="600"
+                    />
+                    <span>Acceso Spa</span>
+                    <small class="precio">$600</small>
+                  </label>
+                  <label class="extra-item">
+                    <input
+                      type="checkbox"
+                      class="extra"
+                      data-nombre="Transporte"
+                      data-precio="350"
+                    />
+                    <span>Transporte aeropuerto</span>
+                    <small class="precio">$350</small>
+                  </label>
+                  <label class="extra-item">
+                    <input
+                      type="checkbox"
+                      class="extra"
+                      data-nombre="Late checkout"
+                      data-precio="250"
+                    />
+                    <span>Late checkout</span>
+                    <small class="precio">$250</small>
+                  </label>
+                </div>
+                <p class="muted">
+                  * Los montos de extra son por reservación (ejemplo). Si luego
+                  quieres manejarlos por noche o por persona, lo ajustamos.
+                </p>
+              </fieldset>
+
+              <!-- Cálculos -->
+              <div class="grid-3" style="grid-column: 1/-1">
+                <div class="field">
+                  <label>Noches</label>
+                  <input id="r_noches" disabled placeholder="—" />
+                </div>
+                <div class="field">
+                  <label>Tarifa estimada (noche)</label>
+                  <input id="r_tarifa" disabled placeholder="—" />
+                </div>
+                <div class="field">
+                  <label>Total estimado</label>
+                  <input id="r_total" disabled placeholder="—" />
+                </div>
+              </div>
+
+              <div class="field" style="grid-column: 1/-1">
+                <label>Notas (opcional)</label>
+                <textarea
+                  id="r_notas"
+                  rows="3"
+                  placeholder="Instrucciones especiales, comentarios…"
+                ></textarea>
+              </div>
+
+              <div class="actions actions-wrap">
+                <button type="button" class="btn btn-secondary" id="btnChecar">
+                  Ver disponibilidad
+                </button>
+                <button type="submit" class="btn btn-primary">Reservar</button>
+              </div>
+            </form>
+
+            <!-- Preview tipo de habitación -->
+            <aside class="preview">
+              <img
+                id="prev_img"
+                src="https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg"
+                alt="Tipo de habitación"
+              />
+              <div class="preview-body">
+                <div class="preview-title" id="prev_titulo">Tipo —</div>
+                <div class="muted" id="prev_detalle">
+                  Capacidad: — · Precio: —
+                </div>
+                <div class="legend">
+                  <span><i class="c-reservada"></i>Reservada</span>
+                  <span><i class="c-checkin"></i>En curso</span>
+                  <span><i class="c-checkout"></i>Finalizada</span>
+                  <span><i class="c-cancelada"></i>Cancelada</span>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- ====== TAB: LISTADO ====== -->
+        <section id="tab-listado" class="section-card" style="display: none">
+          <div class="tools">
+            <div class="field">
+              <label>Buscar</label>
+              <input id="l_q" placeholder="Folio, cliente, habitación…" />
+            </div>
+            <div class="field">
+              <label>Desde</label>
+              <input type="date" id="l_desde" />
+            </div>
+            <div class="field">
+              <label>Hasta</label>
+              <input type="date" id="l_hasta" />
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <select id="l_estado">
+                <option value="">Todos</option>
+                <option>RESERVADA</option>
+                <option>CHECKIN</option>
+                <option>CHECKOUT</option>
+                <option>CANCELADA</option>
+              </select>
+            </div>
+            <button class="btn btn-secondary" id="l_btnBuscar" type="button">
+              Buscar
+            </button>
+            <button class="btn btn-secondary" id="l_btnLimpiar" type="button">
+              Limpiar
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Cliente</th>
+                  <th>Hab.</th>
+                  <th>Check-in</th>
+                  <th>Check-out</th>
+                  <th>Noches</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th style="width: 220px">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="l_tbody">
+                <tr>
+                  <td colspan="9" class="muted center">
+                    Sin datos (aún sin conectar).
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ====== TAB: DISPONIBILIDAD ====== -->
+        <section
+          id="tab-disponibilidad"
+          class="section-card"
+          style="display: none"
+        >
+          <div class="tools">
+            <div class="field">
+              <label>Check-in</label>
+              <input type="date" id="d_in" />
+            </div>
+            <div class="field">
+              <label>Check-out</label>
+              <input type="date" id="d_out" />
+            </div>
+            <button class="btn btn-secondary" id="d_btnVer" type="button">
+              Ver disponibilidad
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Hab.</th>
+                  <th>Tipo</th>
+                  <th>Capacidad</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                  <th style="width: 160px">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="d_tbody">
+                <tr>
+                  <td colspan="6" class="muted center">
+                    Sin datos (aún sin conectar).
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ====== TAB: CALENDARIO ====== -->
+        <section id="tab-calendario" class="section-card" style="display: none">
+          <div class="tools">
+            <div class="field">
+              <label>Mes</label>
+              <input type="month" id="c_mes" />
+            </div>
+            <button class="btn btn-secondary" id="c_btnVer" type="button">
+              Ver
+            </button>
+          </div>
+          <div class="calendar-shell">
+            Calendario (vista mensual) — aquí se mostrará la ocupación por
+            habitación.
+          </div>
+        </section>
+      </div>
+    </header>
+
+    <footer class="footer">
+      © <span id="y"></span> Hotel Paraíso — Reservaciones
+    </footer>
+
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      // Navegación de pestañas (solo UI)
+      const tabs = document.querySelectorAll(".tab-btn");
+      const sections = {
+        "tab-reservar": document.getElementById("tab-reservar"),
+        "tab-listado": document.getElementById("tab-listado"),
+        "tab-disponibilidad": document.getElementById("tab-disponibilidad"),
+        "tab-calendario": document.getElementById("tab-calendario"),
+      };
+      tabs.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          tabs.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          Object.values(sections).forEach((s) => (s.style.display = "none"));
+          sections[btn.dataset.tab].style.display = "";
+        });
+      });
+
+      // ---- Placeholders: más adelante conectamos endpoints ----
+      // • r_cliente, r_habitacion (llenar con opciones desde backend)
+      // • btnChecar (consultar disponibilidad)
+      // • frmReservar (POST crear reserva)
+      // • listado/disponibilidad/calendario
+
+      // ---- Cálculo simple en front: noches + extras (estimado) ----
+      const $in = document.getElementById("r_checkin");
+      const $out = document.getElementById("r_checkout");
+      const $noches = document.getElementById("r_noches");
+      const $tarifa = document.getElementById("r_tarifa");
+      const $total = document.getElementById("r_total");
+
+      // Mapa de imágenes por tipo (cuando tengamos el tipo de la habitación)
+      const IMG_BY_TIPO = {
+        Sencilla:
+          "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
+        Doble:
+          "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg",
+        Suite:
+          "https://images.pexels.com/photos/1571459/pexels-photo-1571459.jpeg",
+        Familiar:
+          "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg",
+      };
+
+      // Cuando llenemos el select de habitaciones desde backend,
+      // guarda data-tipo, data-personas y data-precio en cada <option> para mostrar preview.
+      const selHab = document.getElementById("r_habitacion");
+      const prevImg = document.getElementById("prev_img");
+      const prevTit = document.getElementById("prev_titulo");
+      const prevDet = document.getElementById("prev_detalle");
+
+      selHab.addEventListener("change", () => {
+        const opt = selHab.selectedOptions[0];
+        if (!opt) return;
+        const tipo = opt.dataset.tipo || "—";
+        const cap = opt.dataset.personas || "—";
+        const p = opt.dataset.precio || "";
+        prevTit.textContent = `Tipo ${tipo}`;
+        prevDet.textContent = `Capacidad: ${cap} · Precio: ${
+          p ? "$" + Number(p).toFixed(2) : "—"
+        }`;
+        if (IMG_BY_TIPO[tipo]) prevImg.src = IMG_BY_TIPO[tipo];
+        // también pintamos tarifa en el recuadro de cálculo
+        $tarifa.value = p ? "$" + Number(p).toFixed(2) : "—";
+        updateTotal();
+      });
+
+      [$in, $out].forEach((i) => i.addEventListener("change", updateTotal));
+      document
+        .querySelectorAll(".extra")
+        .forEach((chk) => chk.addEventListener("change", updateTotal));
+
+      function updateTotal() {
+        const dIn = $in.value ? new Date($in.value) : null;
+        const dOut = $out.value ? new Date($out.value) : null;
+        let noches = 0;
+        if (dIn && dOut) {
+          noches = Math.max(
+            0,
+            Math.round((dOut - dIn) / (1000 * 60 * 60 * 24))
+          );
+        }
+        $noches.value = noches || "—";
+
+        const opt = selHab.selectedOptions[0];
+        const precio =
+          opt && opt.dataset.precio ? Number(opt.dataset.precio) : 0;
+        const extras = [...document.querySelectorAll(".extra:checked")].reduce(
+          (acc, e) => acc + Number(e.dataset.precio || 0),
+          0
+        );
+
+        let total = 0;
+        if (noches > 0 && precio > 0) {
+          total = noches * precio + extras;
+        } else if (extras > 0) {
+          total = extras;
+        }
+        $total.value = total > 0 ? "$" + total.toFixed(2) : "—";
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+/* Tarjetas de avisos (éxito / error) coherentes con app.css */
+.notice-wrap {
+  min-height: 80vh;
+  display: grid;
+  place-items: center;
+  padding: 100px 16px 40px;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, .45) 0%, rgba(0, 0, 0, .25) 35%, rgba(0, 0, 0, .10) 100%),
+    var(--hero-bg, url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg')) center/cover no-repeat fixed;
+}
+
+.notice-card {
+  width: min(100%, 720px);
+  background: rgba(255, 255, 255, .95);
+  backdrop-filter: blur(4px);
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .25);
+  padding: 24px 22px;
+}
+
+.notice-title {
+  margin: 0 0 6px;
+  font-size: clamp(20px, 3.2vw, 28px);
+  font-weight: 800;
+  color: #0f172a;
+  text-align: center;
+}
+
+.notice-meta {
+  margin: 0 0 12px;
+  color: #475569;
+  font-size: 14px;
+  text-align: center;
+}
+
+.notice-body {
+  margin: 10px 0 14px;
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.notice-success .notice-title {
+  color: #065f46
+}
+
+.notice-error .notice-title {
+  color: #7f1d1d
+}
+
+.btn-ghost {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid rgba(15, 23, 42, .12);
+  background: #fff;
+  color: #0f172a;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-ghost:hover {
+  background: #f8fafc
+}

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Paraíso · Consultas</title>
+    <link rel="stylesheet" href="/public/assets/css/app.css" />
+    <link rel="stylesheet" href="/public/assets/css/form.css" />
+    <link rel="stylesheet" href="/public/assets/css/consultas.css" />
+    <style>
+      .table-wrap {
+        overflow: auto;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        text-align: left;
+        font-size: 14px;
+      }
+      th {
+        background: #f8fafc;
+      }
+      .empty {
+        text-align: center;
+        padding: 24px;
+        color: #64748b;
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+      .modal {
+        width: min(100%, 640px);
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        padding: 16px;
+      }
+      .modal h3 {
+        margin: 0 0 8px;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin: 12px 0;
+        flex-wrap: wrap;
+      }
+      .btn-tab {
+        background: #e2e8f0;
+        border: none;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-tab.active {
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+        color: #fff;
+      }
+      .search {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .search input {
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        min-width: 260px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar -->
+    <nav
+      class="topbar"
+      style="
+        background: linear-gradient(90deg, var(--primary-1), var(--primary-2));
+      "
+    >
+      <div class="brand">
+        <div class="brand-badge">H</div>
+        <div>Hotel&nbsp;Paraíso</div>
+      </div>
+      <div class="nav-links">
+        <a href="/public/index.html">Inicio</a>
+        <a href="/public/pages/menu-completo.html">Menú</a>
+        <a href="#">Ayuda</a>
+      </div>
+    </nav>
+
+    <!-- Hero con imagen y tarjeta "glass" -->
+    <header
+      class="hero--glass"
+      style="
+        --hero-bg: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg');
+      "
+    >
+      <div class="glass-card consultas-card">
+        <div
+          class="hero-card hero-card--center"
+          style="color: #0f172a; text-align: left; margin-bottom: 12px"
+        >
+          <h1 style="margin: 0 0 4px">Consultas</h1>
+          <p style="margin: 0; color: #475569">
+            Explora, edita o elimina registros del sistema.
+          </p>
+          <div style="margin-top: 12px">
+            <a href="/public/pages/menu-completo.html" class="btn btn-secondary"
+              >← Regresar al Menú</a
+            >
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap">
+            <button class="btn-tab active" data-tab="habitaciones">
+              Habitaciones
+            </button>
+            <button class="btn-tab" data-tab="empleados">Empleados</button>
+            <button class="btn-tab" data-tab="clientes">Clientes</button>
+          </div>
+          <div class="search">
+            <input id="txtSearch" type="search" placeholder="Buscar…" />
+            <button id="btnSearch" class="btn btn-secondary">Buscar</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead id="thead"></thead>
+            <tbody id="tbody">
+              <tr>
+                <td class="empty">Cargando…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </header>
+
+    <!-- Modal EDITAR HABITACIÓN -->
+    <div class="modal-backdrop" id="modalHabitacion">
+      <div class="modal">
+        <h3>Editar habitación</h3>
+        <form id="frmHabitacion" class="form-grid">
+          <input type="hidden" id="h_id" name="id_habitacion" />
+          <div class="form-grid two">
+            <div class="field">
+              <label>Número</label>
+              <input type="number" id="h_numero" name="numero" required />
+            </div>
+            <div class="field">
+              <label>Precio</label>
+              <input
+                type="number"
+                step="0.01"
+                id="h_precio"
+                name="precio"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-grid two">
+            <div class="field">
+              <label>Tipo</label>
+              <select id="h_tipo" name="tipo" required>
+                <option value="">--Selecciona--</option>
+                <option>Sencilla</option>
+                <option>Doble</option>
+                <option>Suite</option>
+                <option>Familiar</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <select id="h_estado" name="estado" required>
+                <option value="">--Selecciona--</option>
+                <option>Disponible</option>
+                <option>Ocupada</option>
+                <option>Mantenimiento</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Capacidad</label>
+            <input type="number" id="h_personas" name="personas" required />
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-close="#modalHabitacion"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal EDITAR EMPLEADO -->
+    <div class="modal-backdrop" id="modalEmpleado">
+      <div class="modal">
+        <h3>Editar empleado</h3>
+        <form id="frmEmpleado" class="form-grid">
+          <input type="hidden" id="e_id" name="id_empleado" />
+          <div class="form-grid two">
+            <div class="field">
+              <label>Nombre</label>
+              <input type="text" id="e_nombre" name="nombre" required />
+            </div>
+            <div class="field">
+              <label>Teléfono</label>
+              <input type="tel" id="e_telefono" name="telefono" required />
+            </div>
+          </div>
+          <div class="form-grid two">
+            <div class="field">
+              <label>Apellido paterno</label>
+              <input type="text" id="e_apellidoP" name="apellidoP" required />
+            </div>
+            <div class="field">
+              <label>Apellido materno</label>
+              <input type="text" id="e_apellidoM" name="apellidoM" />
+            </div>
+          </div>
+          <div class="form-grid two">
+            <div class="field">
+              <label>Área</label>
+              <select id="e_area" name="area" required>
+                <option value="">Cargando áreas…</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Turno</label>
+              <select id="e_turno" name="turno" required>
+                <option value="">Selecciona</option>
+                <option value="1">Mañana</option>
+                <option value="2">Tarde</option>
+                <option value="3">Noche</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-close="#modalEmpleado"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal EDITAR CLIENTE -->
+    <div class="modal-backdrop" id="modalCliente">
+      <div class="modal">
+        <h3>Editar cliente</h3>
+        <form id="frmCliente" class="form-grid">
+          <input type="hidden" id="c_id" name="id_cliente" />
+          <div class="field">
+            <label>Nombre</label><input id="c_nombre" name="nombre" required />
+          </div>
+          <div class="form-grid two">
+            <div class="field">
+              <label>Apellido paterno</label
+              ><input id="c_ap_pat" name="apellido_paterno" required />
+            </div>
+            <div class="field">
+              <label>Apellido materno</label
+              ><input id="c_ap_mat" name="apellido_materno" />
+            </div>
+          </div>
+          <div class="form-grid two">
+            <div class="field">
+              <label>Teléfono</label
+              ><input id="c_tel" name="telefono" required />
+            </div>
+            <div class="field">
+              <label>Correo</label
+              ><input id="c_correo" name="correo" type="email" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-close="#modalCliente"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer class="footer">
+      © <span id="y"></span> Hotel Paraíso — Consultas
+    </footer>
+
+    <script>
+      document.getElementById("y").textContent = new Date().getFullYear();
+
+      const API = {
+        hab: {
+          listar: "/backend/habitaciones/listar.php",
+          eliminar: "/backend/habitaciones/eliminar.php",
+          actualizar: "/backend/habitaciones/actualizar.php",
+        },
+        emp: {
+          listar: "/backend/empleados/listar.php",
+          eliminar: "/backend/empleados/eliminar.php",
+          actualizar: "/backend/empleados/actualizar.php",
+          opcionesArea: "/backend/areas/opciones.php",
+        },
+        cli: {
+          listar: "/backend/clientes/listar.php",
+          ver: "/backend/clientes/ver.php",
+          actualizar: "/backend/clientes/actualizar.php",
+          eliminar: "/backend/clientes/eliminar.php",
+        },
+      };
+
+      const $thead = document.getElementById("thead");
+      const $tbody = document.getElementById("tbody");
+      const $search = document.getElementById("txtSearch");
+      let TAB = "habitaciones";
+
+      const HEADERS = {
+        habitaciones: `
+          <tr>
+            <th>ID</th><th>Número</th><th>Tipo</th><th>Estado</th>
+            <th>Capacidad</th><th>Precio</th><th style="width:180px;">Acciones</th>
+          </tr>`,
+        empleados: `
+          <tr>
+            <th>ID</th><th>Nombre</th><th>Apellidos</th><th>Teléfono</th>
+            <th>Área</th><th>Turno</th><th style="width:180px;">Acciones</th>
+          </tr>`,
+        clientes: `
+          <tr>
+            <th>ID</th><th>Nombre completo</th><th>Teléfono</th>
+            <th>Correo</th><th style="width:180px;">Acciones</th>
+          </tr>`,
+      };
+
+      function setTab(tab) {
+        TAB = tab;
+        document
+          .querySelectorAll(".btn-tab")
+          .forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+        $thead.innerHTML = HEADERS[tab];
+        loadRows();
+      }
+
+      async function loadRows() {
+        $tbody.innerHTML = '<tr><td class="empty">Cargando…</td></tr>';
+        const q = $search.value.trim();
+        let url = "";
+        if (TAB === "habitaciones") url = API.hab.listar;
+        if (TAB === "empleados") url = API.emp.listar;
+        if (TAB === "clientes") url = API.cli.listar;
+        if (q) url += `?q=${encodeURIComponent(q)}`;
+
+        const res = await fetch(url, { headers: { Accept: "text/html" } });
+        if (!res.ok) {
+          $tbody.innerHTML = '<tr><td class="empty">Error al cargar</td></tr>';
+          return;
+        }
+        const html = await res.text();
+        $tbody.innerHTML =
+          html || '<tr><td class="empty">Sin resultados</td></tr>';
+      }
+
+      document.querySelectorAll(".btn-tab").forEach((btn) => {
+        btn.addEventListener("click", () => setTab(btn.dataset.tab));
+      });
+
+      document.getElementById("btnSearch").addEventListener("click", loadRows);
+      let t = null;
+      $search.addEventListener("input", () => {
+        clearTimeout(t);
+        t = setTimeout(loadRows, 300);
+      });
+
+      // Delegación de acciones por pestaña
+      $tbody.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button[data-id]");
+        if (!btn) return;
+        const id = btn.dataset.id;
+        const act = btn.dataset.act;
+
+        if (TAB === "habitaciones") {
+          if (act === "eliminar") {
+            if (!confirm("¿Eliminar habitación?")) return;
+            const fd = new FormData();
+            fd.append("id_habitacion", id);
+            const r = await fetch(API.hab.eliminar, {
+              method: "POST",
+              body: fd,
+            });
+            if (!r.ok) return alert("No se pudo eliminar");
+            loadRows();
+          }
+          if (act === "editar") {
+            document.getElementById("h_id").value = id;
+            document.getElementById("h_numero").value =
+              btn.dataset.numero || "";
+            document.getElementById("h_precio").value =
+              btn.dataset.precio || "";
+            document.getElementById("h_tipo").value = btn.dataset.tipo || "";
+            document.getElementById("h_estado").value =
+              btn.dataset.estado || "";
+            document.getElementById("h_personas").value =
+              btn.dataset.personas || "";
+            document.getElementById("modalHabitacion").style.display = "flex";
+          }
+        }
+
+        if (TAB === "empleados") {
+          if (act === "eliminar") {
+            if (!confirm("¿Eliminar empleado?")) return;
+            const fd = new FormData();
+            fd.append("id_empleado", id);
+            const r = await fetch(API.emp.eliminar, {
+              method: "POST",
+              body: fd,
+            });
+            if (!r.ok) return alert("No se pudo eliminar");
+            loadRows();
+          }
+          if (act === "editar") {
+            const selArea = document.getElementById("e_area");
+            try {
+              const res = await fetch(API.emp.opcionesArea, {
+                headers: { Accept: "text/html" },
+              });
+              selArea.innerHTML = await res.text();
+            } catch {
+              selArea.innerHTML =
+                '<option value="">Error al cargar áreas</option>';
+            }
+            document.getElementById("e_id").value = id;
+            document.getElementById("e_nombre").value =
+              btn.dataset.nombre || "";
+            document.getElementById("e_apellidoP").value =
+              btn.dataset.apellidop || "";
+            document.getElementById("e_apellidoM").value =
+              btn.dataset.apellidom || "";
+            document.getElementById("e_telefono").value =
+              btn.dataset.telefono || "";
+            if (btn.dataset.areaid)
+              document.getElementById("e_area").value = btn.dataset.areaid;
+            document.getElementById("e_turno").value = btn.dataset.turno || "";
+            document.getElementById("modalEmpleado").style.display = "flex";
+          }
+        }
+
+        if (TAB === "clientes") {
+          if (act === "eliminar") {
+            if (!confirm("¿Eliminar cliente?")) return;
+            const fd = new FormData();
+            fd.append("id", id);
+            const r = await fetch(API.cli.eliminar, {
+              method: "POST",
+              body: fd,
+            });
+
+            if (!r.ok) {
+              // intenta leer mensaje JSON
+              let msg = "No se pudo eliminar";
+              try {
+                const j = await r.json();
+                if (j && j.msg) msg = j.msg;
+              } catch (_) {}
+              alert(msg);
+              return;
+            }
+            // OK
+            loadRows();
+            return;
+          }
+          if (act === "editar") {
+            const r = await fetch(
+              API.cli.ver + "?id=" + encodeURIComponent(id)
+            );
+            if (!r.ok) {
+              alert("No se pudo cargar el cliente");
+              return;
+            }
+            const data = await r.json();
+            document.getElementById("c_id").value = data.id_cliente;
+            document.getElementById("c_nombre").value = data.nombre || "";
+            document.getElementById("c_ap_pat").value =
+              data.apellido_paterno || "";
+            document.getElementById("c_ap_mat").value =
+              data.apellido_materno || "";
+            document.getElementById("c_tel").value = data.telefono || "";
+            document.getElementById("c_correo").value = data.correo || "";
+            document.getElementById("modalCliente").style.display = "flex";
+          }
+        }
+      });
+
+      // Cerrar modales
+      document.querySelectorAll("[data-close]").forEach((b) =>
+        b.addEventListener("click", () => {
+          document.querySelector(b.getAttribute("data-close")).style.display =
+            "none";
+        })
+      );
+
+      // Guardar edición habitación
+      document
+        .getElementById("frmHabitacion")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const r = await fetch(API.hab.actualizar, {
+            method: "POST",
+            body: fd,
+          });
+          if (!r.ok) return alert("Error al actualizar");
+          document.getElementById("modalHabitacion").style.display = "none";
+          loadRows();
+        });
+
+      // Guardar edición empleado
+      document
+        .getElementById("frmEmpleado")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          const r = await fetch(API.emp.actualizar, {
+            method: "POST",
+            body: fd,
+          });
+          if (!r.ok) return alert("Error al actualizar");
+          document.getElementById("modalEmpleado").style.display = "none";
+          loadRows();
+        });
+
+      // Guardar edición cliente
+      document
+        .getElementById("frmCliente")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const fd = new FormData(e.target);
+          fd.set("id", document.getElementById("c_id").value);
+          const r = await fetch(API.cli.actualizar, {
+            method: "POST",
+            body: fd,
+          });
+          if (!r.ok) return alert("Error al actualizar");
+          document.getElementById("modalCliente").style.display = "none";
+          loadRows();
+        });
+
+      // Inicial
+      setTab("habitaciones");
+    </script>
+  </body>
+</html>
