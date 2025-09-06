@@ -359,12 +359,6 @@
         });
       });
 
-      // ---- Placeholders: más adelante conectamos endpoints ----
-      // • r_cliente, r_habitacion (llenar con opciones desde backend)
-      // • btnChecar (consultar disponibilidad)
-      // • frmReservar (POST crear reserva)
-      // • listado/disponibilidad/calendario
-
       // ---- Cálculo simple en front: noches + extras (estimado) ----
       const $in = document.getElementById("r_checkin");
       const $out = document.getElementById("r_checkout");
@@ -372,7 +366,6 @@
       const $tarifa = document.getElementById("r_tarifa");
       const $total = document.getElementById("r_total");
 
-      // Mapa de imágenes por tipo (cuando tengamos el tipo de la habitación)
       const IMG_BY_TIPO = {
         Sencilla:
           "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg",
@@ -384,8 +377,6 @@
           "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg",
       };
 
-      // Cuando llenemos el select de habitaciones desde backend,
-      // guarda data-tipo, data-personas y data-precio en cada <option> para mostrar preview.
       const selHab = document.getElementById("r_habitacion");
       const prevImg = document.getElementById("prev_img");
       const prevTit = document.getElementById("prev_titulo");
@@ -402,7 +393,6 @@
           p ? "$" + Number(p).toFixed(2) : "—"
         }`;
         if (IMG_BY_TIPO[tipo]) prevImg.src = IMG_BY_TIPO[tipo];
-        // también pintamos tarifa en el recuadro de cálculo
         $tarifa.value = p ? "$" + Number(p).toFixed(2) : "—";
         updateTotal();
       });
@@ -440,6 +430,176 @@
         }
         $total.value = total > 0 ? "$" + total.toFixed(2) : "—";
       }
+    </script>
+
+    <!-- Llenar combos (con auto-preview) -->
+    <script>
+      async function fillSelect(sel, url) {
+        sel.innerHTML = '<option value="">Cargando…</option>';
+        try {
+          const res = await fetch(url, { headers: { Accept: "text/html" } });
+          const html = await res.text();
+          sel.innerHTML = html;
+          // Por si quedó deshabilitado por algo previo:
+          sel.removeAttribute("disabled");
+          sel.style.pointerEvents = "auto";
+        } catch (e) {
+          sel.innerHTML = '<option value="">(Error al cargar)</option>';
+        }
+      }
+    </script>
+
+    <script>
+      const selCliente = document.getElementById("r_cliente");
+      const selHab2 = document.getElementById("r_habitacion"); // alias local
+
+      // ANTES estaba sin return; ahora sí esperamos a que termine:
+      (async () => {
+        await fillSelect(selCliente, "/backend/clientes/opciones.php");
+        await fillSelect(selHab2, "/backend/habitaciones/opciones.php");
+
+        // Preseleccionar la primera opción válida y disparar el preview:
+        const first = [...selHab2.options].find((o) => o.value);
+        if (first) {
+          selHab2.value = first.value;
+          selHab2.dispatchEvent(new Event("change"));
+        }
+      })();
+
+      // (temporal) bloquear submit hasta que conectemos crear.php
+      document.getElementById("frmReservar").addEventListener("submit", (e) => {
+        e.preventDefault();
+        alert("Pronto guardaremos la reservación (falta conectar el backend).");
+      });
+    </script>
+
+    <!-- Ver disponibilidad (botón en "Reservar") -->
+    <script>
+      const btnChecar = document.getElementById("btnChecar");
+      btnChecar.addEventListener("click", async () => {
+        const inV = document.getElementById("r_checkin").value;
+        const outV = document.getElementById("r_checkout").value;
+        if (!inV || !outV) {
+          alert("Selecciona fechas de check-in y check-out");
+          return;
+        }
+
+        try {
+          const res = await fetch(
+            `/backend/reservaciones/disponibles.php?check_in=${encodeURIComponent(
+              inV
+            )}&check_out=${encodeURIComponent(outV)}`
+          );
+          const data = await res.json();
+          if (!data.ok) {
+            alert(data.msg || "Error");
+            return;
+          }
+
+          const opt = selHab.selectedOptions[0];
+          if (opt) {
+            const idSel = Number(opt.value);
+            const h = data.data.find((x) => x.id_habitacion === idSel);
+            if (h) {
+              alert(
+                h.disponible
+                  ? `La habitación #${h.numero} está DISPONIBLE.`
+                  : `La habitación #${h.numero} está OCUPADA en ese rango.`
+              );
+            } else {
+              alert(
+                "No se encontró la habitación seleccionada en el resultado."
+              );
+            }
+          } else {
+            alert(
+              'Disponibilidad consultada. Ve la pestaña "Disponibilidad" para listado completo.'
+            );
+          }
+        } catch (e) {
+          alert("Error al consultar disponibilidad");
+        }
+      });
+    </script>
+
+    <!-- Pestaña “Disponibilidad” → tabla -->
+    <script>
+      const dIn = document.getElementById("d_in");
+      const dOut = document.getElementById("d_out");
+      const dBtn = document.getElementById("d_btnVer");
+      const dBody = document.getElementById("d_tbody");
+
+      dBtn.addEventListener("click", async () => {
+        const inV = dIn.value;
+        const outV = dOut.value;
+        if (!inV || !outV) {
+          alert("Selecciona el rango de fechas");
+          return;
+        }
+
+        dBody.innerHTML = `<tr><td colspan="6" class="center muted">Cargando…</td></tr>`;
+        try {
+          const res = await fetch(
+            `/backend/reservaciones/disponibles.php?check_in=${encodeURIComponent(
+              inV
+            )}&check_out=${encodeURIComponent(outV)}`
+          );
+          const data = await res.json();
+          if (!data.ok) {
+            dBody.innerHTML = `<tr><td colspan="6" class="center muted">${
+              data.msg || "Error"
+            }</td></tr>`;
+            return;
+          }
+
+          if (!data.data.length) {
+            dBody.innerHTML = `<tr><td colspan="6" class="center muted">Sin habitaciones</td></tr>`;
+            return;
+          }
+
+          dBody.innerHTML = data.data
+            .map((h) => {
+              const estado = h.disponible
+                ? '<span class="badge" style="background:#22c55e;color:#fff">Libre</span>'
+                : '<span class="badge" style="background:#ef4444;color:#fff">Ocupada</span>';
+              const btn = h.disponible
+                ? `<button class="btn btn-primary" data-act="reservar" data-id="${h.id_habitacion}" data-num="${h.numero}">Reservar</button>`
+                : `<button class="btn btn-secondary" disabled>No disponible</button>`;
+
+              return `<tr>
+            <td>#${h.numero}</td>
+            <td>${h.tipo}</td>
+            <td>${h.personas}</td>
+            <td>$${Number(h.precio).toFixed(2)}</td>
+            <td>${estado}</td>
+            <td>${btn}</td>
+          </tr>`;
+            })
+            .join("");
+        } catch (e) {
+          dBody.innerHTML = `<tr><td colspan="6" class="center muted">Error al consultar</td></tr>`;
+        }
+      });
+
+      // Click en "Reservar" desde disponibilidad → lleva a pestaña Reservar con la habitación preseleccionada
+      dBody.addEventListener("click", (e) => {
+        const b = e.target.closest('button[data-act="reservar"]');
+        if (!b) return;
+        const id = b.getAttribute("data-id");
+        const tabBtn = document.querySelector(
+          '.tab-btn[data-tab="tab-reservar"]'
+        );
+        tabBtn.click();
+        const opt = [...selHab.options].find((o) => o.value === id);
+        if (opt) {
+          selHab.value = id;
+          selHab.dispatchEvent(new Event("change"));
+        }
+        const inV = dIn.value;
+        const outV = dOut.value;
+        if (inV) document.getElementById("r_checkin").value = inV;
+        if (outV) document.getElementById("r_checkout").value = outV;
+      });
     </script>
   </body>
 </html>

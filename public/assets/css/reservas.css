@@ -1,4 +1,4 @@
-/* Contenedor “ancho” como en consultas/habitación */
+/* Contenedor “ancho” */
 .glass-wide {
   width: min(100%, 1200px);
   padding: 20px;
@@ -243,4 +243,11 @@ th {
   align-items: center;
   justify-content: center;
   color: #64748b;
+}
+
+/* Asegura que el select sea clickeable */
+#r_habitacion,
+#r_cliente {
+  position: relative;
+  z-index: 1;
 }
