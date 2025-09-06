@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="/public/assets/css/app.css" />
     <link rel="stylesheet" href="/public/assets/css/form.css" />
     <style>
-      /* Ajustes sutiles para esta página (todo lo demás viene de app.css/form.css) */
+      .glass-card {
+        max-width: 500px; /* más compacto */
+        padding: 24px;
+      }
       .helper {
         margin-top: 6px;
         font-size: 12px;
@@ -34,18 +37,15 @@
       </div>
     </nav>
 
-    <!-- Portada tipo “glass” igual que alta-empleado -->
+    <!-- Fondo con tarjeta -->
     <header
       class="hero--glass"
       style="
-        --hero-bg: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg');
+        --hero-bg: url('https://images.pexels.com/photos/271639/pexels-photo-271639.jpeg');
       "
     >
-      <div class="glass-card" style="width: min(100%, 760px); padding: 22px">
-        <div
-          class="hero-card hero-card--center"
-          style="text-align: center; margin-bottom: 12px"
-        >
+      <div class="glass-card">
+        <div class="hero-card hero-card--center" style="margin-bottom: 12px">
           <h1 style="margin: 0">Registrar Cliente</h1>
         </div>
 
@@ -99,19 +99,13 @@
               placeholder="ejemplo@correo.com"
             />
             <div class="helper">
-              Opcional. Se guardará en la columna <strong>correo</strong> de la
-              tabla <strong>Cliente</strong>.
+              Opcional. Se guardará en la columna <strong>correo</strong>.
             </div>
           </div>
 
           <div
             class="actions"
-            style="
-              display: flex;
-              gap: 12px;
-              justify-content: space-between;
-              margin-top: 6px;
-            "
+            style="display: flex; gap: 12px; justify-content: space-between"
           >
             <button type="submit" class="btn btn-primary">Registrar</button>
             <a href="/public/pages/menu-completo.html" class="btn btn-secondary"
@@ -125,10 +119,9 @@
     <footer class="footer">
       © <span id="y"></span> Hotel Paraíso — Clientes
     </footer>
+
     <script>
       document.getElementById("y").textContent = new Date().getFullYear();
-
-      // Evita doble envío accidental
       const frm = document.getElementById("frmCliente");
       frm.addEventListener("submit", () => {
         const btn = frm.querySelector('button[type="submit"]');
@@ -136,8 +129,5 @@
         setTimeout(() => (btn.disabled = false), 2000);
       });
     </script>
-
-    <!-- Si quieres proteger con el guard de login demo, descomenta: -->
-    <!-- <script src="/public/assets/js/auth.js"></script> -->
   </body>
 </html>

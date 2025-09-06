@@ -36,20 +36,33 @@
         <h1>Menú principal</h1>
         <p>
           Elige una acción para administrar el hotel: registra habitaciones, da
-          de alta empleados, consulta información o genera reportes.
+          de alta empleados, clientes, reservaciones, consulta información o
+          genera reportes.
         </p>
         <div class="actions actions--center" style="gap: 16px; flex-wrap: wrap">
           <button
             class="btn-primary"
             onclick="location.href='/public/pages/habitacion.html'"
           >
-            Alta habitación
+            Registrar habitación
           </button>
           <button
             class="btn-primary"
             onclick="location.href='/public/pages/registro-empleado.html'"
           >
-            Alta empleado
+            Registrar empleado
+          </button>
+          <button
+            class="btn-primary"
+            onclick="location.href='/public/pages/clientes.html'"
+          >
+            Registrar cliente
+          </button>
+          <button
+            class="btn-primary"
+            onclick="location.href='/public/pages/reservaciones.html'"
+          >
+            Reservaciones
           </button>
           <button
             class="btn-primary"
@@ -57,7 +70,6 @@
           >
             Consultas
           </button>
-          <!-- NUEVO botón Reportes -->
           <button
             class="btn-primary"
             onclick="location.href='/public/pages/reportes.html'"
@@ -72,6 +84,24 @@
     <section class="section">
       <h2>Accesos rápidos</h2>
       <div class="grid">
+        <!-- Reservaciones primero -->
+        <article
+          class="card"
+          onclick="location.href='/public/pages/reservaciones.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/261101/pexels-photo-261101.jpeg"
+            alt="Reservaciones"
+          />
+          <div class="body">
+            <h3 class="title">Reservaciones</h3>
+            <p class="meta">
+              Crea y administra reservaciones, disponibilidad y check-out.
+            </p>
+          </div>
+        </article>
+
         <article
           class="card"
           onclick="location.href='/public/pages/habitacion.html'"
@@ -106,6 +136,23 @@
 
         <article
           class="card"
+          onclick="location.href='/public/pages/clientes.html'"
+          style="cursor: pointer"
+        >
+          <img
+            src="https://images.pexels.com/photos/3184430/pexels-photo-3184430.jpeg"
+            alt="Clientes"
+          />
+          <div class="body">
+            <h3 class="title">Registrar cliente</h3>
+            <p class="meta">
+              Registra nuevos clientes y administra su información de contacto.
+            </p>
+          </div>
+        </article>
+
+        <article
+          class="card"
           onclick="location.href='/public/pages/consultas.html'"
           style="cursor: pointer"
         >
@@ -116,13 +163,11 @@
           <div class="body">
             <h3 class="title">Consultas</h3>
             <p class="meta">
-              Revisa listados (p.ej. habitaciones) y gestiona
-              edición/eliminación.
+              Revisa listados de habitaciones, empleados y clientes.
             </p>
           </div>
         </article>
 
-        <!-- NUEVA tarjeta Reportes -->
         <article
           class="card"
           onclick="location.href='/public/pages/reportes.html'"
@@ -162,7 +207,6 @@
     <script>
       document.getElementById("y").textContent = new Date().getFullYear();
     </script>
-    <!-- Guard demo de login -->
     <script src="/public/assets/js/auth.js"></script>
   </body>
 </html>

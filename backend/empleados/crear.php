@@ -163,13 +163,15 @@ if (!$stmt->execute()) {
 $nuevoID = $stmt->insert_id;
 $stmt->close();
 
-// OK
-$body  = '<p><strong>ID:</strong> '.(int)$nuevoID.'</p>';
-$body .= '<p><strong>Nombre:</strong> '.htmlspecialchars($nombre).' '.htmlspecialchars($apellidoP).' '.htmlspecialchars($apellidoM).'</p>';
-$body .= '<p><strong>Área (ID):</strong> '.(int)$areaId.' · <strong>Turno:</strong> '.(int)$turnoId.'</p>';
-
-page_notice('✅ Empleado registrado', $body, 'success', [
-    ['href'=>'/public/pages/registro-empleado.html','label'=>'Registrar otro'],
-    ['href'=>'/public/pages/menu-completo.html','label'=>'Menú'],
-    ['href'=>'/public/pages/consultas.html','label'=>'Ir a consultas']
-], "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg");
+// === AVISO LIMPIO (sin detalles de ID/Nombre/Área/Turno) ===
+page_notice(
+    '✅ Empleado registrado',
+    '<p>Operación completada correctamente.</p>',
+    'success',
+    [
+        ['href'=>'/public/pages/registro-empleado.html','label'=>'Registrar otro'],
+        ['href'=>'/public/pages/menu-completo.html','label'=>'Menú'],
+        ['href'=>'/public/pages/consultas.html','label'=>'Ir a consultas']
+    ],
+    "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg"
+);

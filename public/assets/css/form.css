@@ -93,3 +93,91 @@
   color: #64748b;
   margin-top: 4px;
 }
+
+/* --- Registrar Cliente: compactar y mejorar legibilidad --- */
+.hero--glass {
+  /* oscurecer un poco el fondo para resaltar la tarjeta */
+  position: relative;
+}
+
+.hero--glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, .35), rgba(0, 0, 0, .35));
+  z-index: 0;
+}
+
+.hero--glass>.glass-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Tarjeta más compacta y angosta */
+.glass-card {
+  width: min(100%, 560px);
+  padding: 18px 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+}
+
+/* Títulos y espaciados */
+.glass-card h1 {
+  font-size: 22px;
+  margin: 4px 0 10px;
+}
+
+/* Campos más compactos */
+.form-grid .field {
+  margin-bottom: 10px;
+}
+
+.form-grid .field label {
+  font-size: 13px;
+  color: #475569;
+}
+
+/* Inputs más “redonditos” y con sombra sutil */
+.form-grid input {
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .03) inset;
+}
+
+/* Dos columnas en pantallas medianas para acortar el alto */
+@media (min-width: 768px) {
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 14px;
+  }
+
+  /* nombre/telefono a la izquierda, apellidos/correo a la derecha */
+  #nombre,
+  #tel {
+    grid-column: 1;
+  }
+
+  #ap_pat,
+  #correo {
+    grid-column: 2;
+  }
+
+  /* apellido materno abajo a lo ancho */
+  #ap_mat {
+    grid-column: 1 / -1;
+  }
+
+  /* acciones a lo ancho y separadas */
+  .actions {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Nota/ayuda sutil */
+.helper {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #64748b;
+}

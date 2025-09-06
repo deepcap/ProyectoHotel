@@ -15,14 +15,12 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
     exit;
 }
 
-// Recibir
+// Recibir (⚠️ sin fechas aquí)
 $numero   = trim($_POST['numero']   ?? '');
 $precio   = trim($_POST['precio']   ?? '');
 $tipo     = trim($_POST['tipo']     ?? '');
 $estado   = trim($_POST['estado']   ?? '');
 $personas = trim($_POST['personas'] ?? '');
-$entrada  = trim($_POST['entrada']  ?? '');
-$salida   = trim($_POST['salida']   ?? '');
 
 // Validaciones
 $errores = [];
@@ -79,17 +77,17 @@ if (!$stmt->execute()) {
     ]);
     $stmt->close(); exit;
 }
-$nuevoID = $stmt->insert_id;
 $stmt->close();
 
-// OK
-$body  = '<p><strong>ID:</strong> '.(int)$nuevoID.'</p>';
-$body .= '<p><strong>Número:</strong> '.(int)$num.' · <strong>Tipo:</strong> '.htmlspecialchars($tipo).' · <strong>Estado:</strong> '.htmlspecialchars($estado).' · <strong>Capacidad:</strong> '.(int)$per.'</p>';
-if ($entrada !== '' || $salida !== '') {
-    $body .= '<p><em>Check-in/out recibidos: '.htmlspecialchars($entrada ?: '—').' / '.htmlspecialchars($salida ?: '—').'</em></p>';
-}
-page_notice('✅ Habitación registrada', $body, 'success', [
-    ['href'=>'/public/pages/habitacion.html','label'=>'Registrar otra'],
-    ['href'=>'/public/pages/menu-completo.html','label'=>'Menú'],
-    ['href'=>'/public/pages/consultas.html','label'=>'Ir a consultas']
-], "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg");
+// ✅ ÉXITO — mensaje minimalista (sin datos sensibles)
+page_notice(
+    '✅ Habitación registrada',
+    '<p>El registro se completó correctamente.</p>',
+    'success',
+    [
+        ['href'=>'/public/pages/habitacion.html','label'=>'Registrar otra'],
+        ['href'=>'/public/pages/menu-completo.html','label'=>'Menú'],
+        ['href'=>'/public/pages/consultas.html','label'=>'Ir a consultas']
+    ],
+    "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg"
+);
