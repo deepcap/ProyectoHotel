@@ -68,7 +68,6 @@
           <button class="tab-btn" data-tab="tab-disponibilidad">
             Disponibilidad
           </button>
-          <button class="tab-btn" data-tab="tab-calendario">Calendario</button>
           <div class="right">
             <a class="btn btn-secondary" href="/public/pages/menu-completo.html"
               >← Menú</a
@@ -317,17 +316,35 @@
         </section>
 
         <!-- ====== TAB: CALENDARIO ====== -->
+        <!-- ====== TAB: CALENDARIO ====== -->
         <section id="tab-calendario" class="section-card" style="display: none">
-          <div class="tools">
+          <div
+            class="tools"
+            style="gap: 12px; align-items: end; flex-wrap: wrap"
+          >
+            <div class="field">
+              <label>Año</label>
+              <select id="c_anio"></select>
+            </div>
             <div class="field">
               <label>Mes</label>
-              <input type="month" id="c_mes" />
+              <select id="c_mes_select"></select>
             </div>
-            <button class="btn btn-secondary" id="c_btnVer" type="button">
-              Ver
-            </button>
+
+            <div style="display: flex; gap: 8px; align-items: center">
+              <button class="btn btn-secondary" id="c_prev" type="button">
+                ← Anterior
+              </button>
+              <button class="btn btn-secondary" id="c_next" type="button">
+                Siguiente →
+              </button>
+              <button class="btn btn-secondary" id="c_btnVer" type="button">
+                Ver
+              </button>
+            </div>
           </div>
-          <div class="calendar-shell">
+
+          <div class="calendar-shell" id="c_shell">
             Calendario (vista mensual) — aquí se mostrará la ocupación por
             habitación.
           </div>
@@ -467,10 +484,54 @@
       })();
 
       // (temporal) bloquear submit hasta que conectemos crear.php
-      document.getElementById("frmReservar").addEventListener("submit", (e) => {
-        e.preventDefault();
-        alert("Pronto guardaremos la reservación (falta conectar el backend).");
-      });
+      // Enviar la reserva al backend
+      document
+        .getElementById("frmReservar")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const id_cliente = document.getElementById("r_cliente").value;
+          const id_habitacion = document.getElementById("r_habitacion").value;
+          const check_in = document.getElementById("r_checkin").value;
+          const check_out = document.getElementById("r_checkout").value;
+          const notas = document.getElementById("r_notas")?.value || "";
+
+          if (!id_cliente || !id_habitacion || !check_in || !check_out) {
+            alert("Completa cliente, habitación y fechas.");
+            return;
+          }
+
+          const fd = new FormData();
+          fd.append("id_cliente", id_cliente);
+          fd.append("id_habitacion", id_habitacion);
+          fd.append("check_in", check_in);
+          fd.append("check_out", check_out);
+          fd.append("notas", notas);
+
+          try {
+            const res = await fetch("/backend/reservaciones/crear.php", {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json();
+
+            if (!res.ok || !data.ok) {
+              alert(data.msg || "No se pudo crear la reservación");
+              return;
+            }
+
+            alert(`✅ Reservación creada (ID: ${data.id})`);
+
+            // Cambiar a la pestaña "Listado"
+            document.querySelector('.tab-btn[data-tab="tab-listado"]').click();
+
+            // Si tienes una función para recargar el listado, llámala aquí (opcional):
+            // loadListado();
+          } catch (err) {
+            console.error(err);
+            alert("Error de red al crear la reservación");
+          }
+        });
     </script>
 
     <!-- Ver disponibilidad (botón en "Reservar") -->
@@ -600,6 +661,450 @@
         if (inV) document.getElementById("r_checkin").value = inV;
         if (outV) document.getElementById("r_checkout").value = outV;
       });
+    </script>
+
+    <script>
+      // === SUBMIT: crear reservación ===
+      (function () {
+        const frm = document.getElementById("frmReservar");
+        const selCliente = document.getElementById("r_cliente");
+        const selHab = document.getElementById("r_habitacion");
+        const inEl = document.getElementById("r_checkin");
+        const outEl = document.getElementById("r_checkout");
+        const notasEl = document.getElementById("r_notas");
+
+        // Utilidad: suma extras marcados
+        function getExtrasTotal() {
+          return [...document.querySelectorAll(".extra:checked")].reduce(
+            (acc, e) => acc + Number(e.dataset.precio || 0),
+            0
+          );
+        }
+
+        // Mensaje bonito (puedes cambiar por un modal si prefieres)
+        function toast(msg, ok = true) {
+          const d = document.createElement("div");
+          d.textContent = msg;
+          d.style.cssText =
+            "position:fixed;left:50%;top:16px;transform:translateX(-50%);" +
+            "padding:10px 14px;border-radius:10px;color:#fff;font-weight:600;" +
+            (ok
+              ? "background:linear-gradient(90deg,#10b981,#22c55e);"
+              : "background:linear-gradient(90deg,#ef4444,#f97316);");
+          document.body.appendChild(d);
+          setTimeout(() => d.remove(), 2500);
+        }
+
+        frm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const id_cliente = Number(selCliente.value || 0);
+          const id_habitacion = Number(selHab.value || 0);
+          const check_in = inEl.value;
+          const check_out = outEl.value;
+          const notas = (notasEl.value || "").trim();
+          const extras_total = getExtrasTotal();
+
+          // Validaciones mínimas en front
+          if (!id_cliente) return toast("Selecciona un cliente", false);
+          if (!id_habitacion) return toast("Selecciona una habitación", false);
+          if (!check_in || !check_out) return toast("Selecciona fechas", false);
+          if (check_in >= check_out)
+            return toast("El check-out debe ser posterior al check-in", false);
+
+          // Construir payload
+          const fd = new FormData();
+          fd.append("id_cliente", String(id_cliente));
+          fd.append("id_habitacion", String(id_habitacion));
+          fd.append("check_in", check_in);
+          fd.append("check_out", check_out);
+          fd.append("notas", notas);
+          fd.append("extras_total", String(extras_total));
+
+          // Llamar al backend
+          try {
+            const res = await fetch("/backend/reservaciones/crear.php", {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok || !data || data.ok !== true) {
+              const msg =
+                data && data.msg
+                  ? data.msg
+                  : `Error al guardar (HTTP ${res.status})`;
+              return toast(msg, false);
+            }
+
+            // Éxito
+            const r = data.data || {};
+            toast(
+              `Reserva #${r.id_reservacion} creada: Hab ${
+                r.id_habitacion
+              } · ${r.check_in.slice(0, 10)} → ${r.check_out.slice(0, 10)}`
+            );
+
+            // Opcional: limpiar y cambiar a la pestaña "Listado"
+            frm.reset();
+            // Recalcular totales y preview
+            document.getElementById("r_noches").value = "—";
+            document.getElementById("r_tarifa").value = "—";
+            document.getElementById("r_total").value = "—";
+
+            // Si quieres saltar a Listado:
+            // document.querySelector('.tab-btn[data-tab="tab-listado"]').click();
+            // (luego conectaremos el listado a su endpoint)
+          } catch (err) {
+            console.error(err);
+            toast("Error de red/servidor al guardar", false);
+          }
+        });
+      })();
+    </script>
+    <script>
+      // --- Listado: cargar con filtros ---
+      const lQ = document.getElementById("l_q");
+      const lDesde = document.getElementById("l_desde");
+      const lHasta = document.getElementById("l_hasta");
+      const lEst = document.getElementById("l_estado");
+      const lBody = document.getElementById("l_tbody");
+
+      async function cargarListado() {
+        const params = new URLSearchParams();
+        if (lQ.value.trim() !== "") params.set("q", lQ.value.trim());
+        if (lDesde.value) params.set("desde", lDesde.value);
+        if (lHasta.value) params.set("hasta", lHasta.value);
+        if (lEst.value) params.set("estado", lEst.value);
+
+        lBody.innerHTML =
+          '<tr><td class="center muted" colspan="9">Cargando…</td></tr>';
+
+        const res = await fetch(
+          "/backend/reservaciones/listar.php?" + params.toString(),
+          { headers: { Accept: "text/html" } }
+        );
+        if (!res.ok) {
+          lBody.innerHTML =
+            '<tr><td class="center muted" colspan="9">Error al cargar</td></tr>';
+          return;
+        }
+        const html = await res.text();
+        lBody.innerHTML =
+          html ||
+          '<tr><td class="center muted" colspan="9">Sin resultados</td></tr>';
+      }
+
+      document
+        .getElementById("l_btnBuscar")
+        .addEventListener("click", cargarListado);
+      document.getElementById("l_btnLimpiar").addEventListener("click", () => {
+        lQ.value = "";
+        lDesde.value = "";
+        lHasta.value = "";
+        lEst.value = "";
+        cargarListado();
+      });
+
+      // Cuando el usuario abra el tab Listado, asegúrate de llamar a cargarListado()
+      document
+        .querySelector('.tab-btn[data-tab="tab-listado"]')
+        .addEventListener("click", cargarListado);
+    </script>
+
+    <script>
+      // --- Acciones por fila del listado ---
+      function toast(msg, ok = true) {
+        const d = document.createElement("div");
+        d.textContent = msg;
+        d.style.cssText =
+          "position:fixed;left:50%;top:16px;transform:translateX(-50%);padding:10px 14px;border-radius:10px;color:#fff;font-weight:600;" +
+          (ok
+            ? "background:linear-gradient(90deg,#10b981,#22c55e);"
+            : "background:linear-gradient(90deg,#ef4444,#f97316);");
+        document.body.appendChild(d);
+        setTimeout(() => d.remove(), 2200);
+      }
+
+      lBody.addEventListener("click", async (e) => {
+        const b = e.target.closest("button[data-act]");
+        if (!b) return;
+        const id = b.dataset.id;
+        const act = b.dataset.act;
+
+        if (act === "checkin" || act === "checkout") {
+          const url =
+            act === "checkin"
+              ? "/backend/reservaciones/checkin.php"
+              : "/backend/reservaciones/checkout.php";
+          const fd = new FormData();
+          fd.append("id_reservacion", id);
+          try {
+            const res = await fetch(url, { method: "POST", body: fd });
+            const js = await res.json().catch(() => null);
+            if (!res.ok || !js || js.ok !== true) {
+              toast(js?.msg || "Error", false);
+              return;
+            }
+            toast(js.msg, true);
+            cargarListado();
+          } catch (err) {
+            toast("Error de red", false);
+          }
+          return;
+        }
+
+        if (act === "eliminar") {
+          if (
+            !confirm(
+              "¿Eliminar la reservación? Se borrarán sus cobros/tickets/fechas/servicios ligados."
+            )
+          )
+            return;
+          const fd = new FormData();
+          fd.append("id_reservacion", id);
+          try {
+            const res = await fetch("/backend/reservaciones/eliminar.php", {
+              method: "POST",
+              body: fd,
+            });
+            const js = await res.json().catch(() => null);
+            if (!res.ok || !js || js.ok !== true) {
+              toast(js?.msg || "No se pudo eliminar", false);
+              return;
+            }
+            toast(js.msg, true);
+            cargarListado();
+          } catch (err) {
+            toast("Error de red", false);
+          }
+          return;
+        }
+      });
+    </script>
+
+    <script>
+      // --- Acciones en el listado: Check-out y Eliminar ---
+      const $lBody = document.getElementById("l_tbody");
+
+      $lBody.addEventListener("click", async (e) => {
+        const btn = e.target.closest("button[data-act]");
+        if (!btn) return;
+
+        const act = btn.dataset.act;
+        const id = btn.dataset.id;
+
+        if (act === "checkout") {
+          if (!confirm("¿Registrar check-out ahora?")) return;
+
+          try {
+            const fd = new FormData();
+            fd.append("id", id);
+            const res = await fetch("/backend/reservaciones/checkout.php", {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json();
+            if (!data.ok) {
+              alert(data.msg || "No se pudo completar el check-out");
+              return;
+            }
+            // Refrescar listado
+            document.getElementById("l_btnBuscar").click();
+          } catch (err) {
+            alert("Error al registrar check-out");
+          }
+        }
+
+        if (act === "eliminar") {
+          // (Opción ya existente si la tienes; si no, la agregas similar)
+          if (!confirm("¿Eliminar esta reservación?")) return;
+          try {
+            const fd = new FormData();
+            fd.append("id", id);
+            const res = await fetch("/backend/reservaciones/eliminar.php", {
+              method: "POST",
+              body: fd,
+            });
+            const data = await res.json();
+            if (!data.ok) {
+              alert(data.msg || "No se pudo eliminar");
+              return;
+            }
+            document.getElementById("l_btnBuscar").click();
+          } catch {
+            alert("Error al eliminar");
+          }
+        }
+      });
+    </script>
+
+    <script>
+      // --- Helpers de Fechas ---
+      function ymd(d) {
+        return d.toISOString().slice(0, 10);
+      }
+      function parseDT(s) {
+        return s ? new Date(s.replace(" ", "T")) : null;
+      }
+
+      // --- Llenar select Habitación para el filtro (reutilizamos opciones.php) ---
+      async function fillHabCalendar() {
+        const sel = document.getElementById("c_hab");
+        try {
+          const res = await fetch("/backend/habitaciones/opciones.php", {
+            headers: { Accept: "text/html" },
+          });
+          const html = await res.text();
+          // mantenemos "Todas" y añadimos las opciones
+          sel.innerHTML = '<option value="">Todas</option>' + html;
+        } catch {
+          sel.innerHTML = '<option value="">(Error al cargar)</option>';
+        }
+      }
+      fillHabCalendar();
+
+      // --- Render Calendario (grilla mensual con chips por día) ---
+      async function renderCalendar() {
+        const shell = document.getElementById("cal_mount");
+        const mes = document.getElementById("c_mes").value; // YYYY-MM
+        const idh = document.getElementById("c_hab").value; // "" | id
+        const tipo = document.getElementById("c_tipo").value; // "" | Tipo
+
+        if (!mes) {
+          shell.innerHTML =
+            '<div class="center muted">Selecciona un mes y pulsa “Ver”.</div>';
+          return;
+        }
+
+        const qs = new URLSearchParams({ mes });
+        if (idh) qs.set("id_habitacion", idh);
+        if (tipo) qs.set("tipo", tipo);
+
+        shell.innerHTML = '<div class="center muted">Cargando…</div>';
+
+        let payload;
+        try {
+          const res = await fetch(
+            "/backend/reservaciones/calendario.php?" + qs.toString()
+          );
+          payload = await res.json();
+        } catch {
+          shell.innerHTML =
+            '<div class="center muted">Error al consultar</div>';
+          return;
+        }
+        if (!payload.ok) {
+          shell.innerHTML =
+            '<div class="center muted">' +
+            (payload.msg || "Sin datos") +
+            "</div>";
+          return;
+        }
+
+        // Construimos las semanas del mes
+        const first = new Date(mes + "-01T00:00:00");
+        const year = first.getFullYear();
+        const month = first.getMonth(); // 0..11
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        // calc qué día de la semana inicia (0=Domingo)
+        const startDow = new Date(year, month, 1).getDay();
+
+        // Crear DOM base
+        const head = `
+      <div class="cal-head">
+        <div class="dow">Dom</div><div class="dow">Lun</div><div class="dow">Mar</div>
+        <div class="dow">Mié</div><div class="dow">Jue</div><div class="dow">Vie</div><div class="dow">Sáb</div>
+      </div>
+    `;
+
+        // Preparar contenedor de celdas por semana
+        const weeks = [];
+        let dayNum = 1 - startDow; // Permite días "vacíos" antes del 1
+
+        while (dayNum <= daysInMonth) {
+          const cells = [];
+          for (let i = 0; i < 7; i++, dayNum++) {
+            if (dayNum < 1 || dayNum > daysInMonth) {
+              cells.push(`<div class="day"></div>`);
+            } else {
+              cells.push(`
+            <div class="day" data-date="${year}-${String(month + 1).padStart(
+                2,
+                "0"
+              )}-${String(dayNum).padStart(2, "0")}">
+              <span class="n">${dayNum}</span>
+              <div class="chips"></div>
+            </div>
+          `);
+            }
+          }
+          weeks.push(`<div class="cal-row">${cells.join("")}</div>`);
+        }
+
+        shell.innerHTML = `<div class="cal-grid"><div class="cal-month">${head}${weeks.join(
+          ""
+        )}</div></div>`;
+
+        // Pintar chips en los días que caen dentro del rango de cada reserva
+        const chipsByDate = {};
+        function pushChip(dateStr, html) {
+          (chipsByDate[dateStr] ||= []).push(html);
+        }
+
+        payload.data.forEach((r) => {
+          const inDT = parseDT(r.check_in); // Date
+          const outDT = parseDT(r.check_out) || new Date(year, month + 1, 1); // si no hay salida, tomamos fin de mes+1 como tope
+          // iterar por días que caen dentro del mes visible
+          const cur = new Date(year, month, 1);
+          const last = new Date(year, month, daysInMonth, 23, 59, 59);
+
+          // rango para iterar: máx(inDT, firstDay) .. mín(outDT, lastDay)
+          const from = new Date(Math.max(inDT.getTime(), cur.getTime()));
+          const to = new Date(Math.min(outDT.getTime(), last.getTime()));
+
+          if (to < from) return; // no cruza el mes
+
+          const estado = r.check_out === null ? "En curso" : "Reservada";
+          const cls = estado === "En curso" ? "chip--run" : "chip--res";
+          const label = `#${r.habitacion} · ${r.cliente}`;
+
+          for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+            pushChip(
+              ymd(d),
+              `<span class="chip ${cls}" title="${label}">${
+                "#" + r.habitacion
+              }</span>`
+            );
+          }
+        });
+
+        // Volcar chips a las celdas
+        Object.entries(chipsByDate).forEach(([dateStr, arr]) => {
+          const cell = shell.querySelector(
+            `.day[data-date="${dateStr}"] .chips`
+          );
+          if (cell) cell.innerHTML = arr.join("");
+        });
+      }
+
+      // Eventos
+      document
+        .getElementById("c_btnVer")
+        .addEventListener("click", renderCalendar);
+
+      // Autoseleccionar el mes actual al abrir la pestaña Calendario (1 sola vez)
+      (function initCalendarDefaults() {
+        const m = document.getElementById("c_mes");
+        if (!m.value) {
+          const now = new Date();
+          m.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}`;
+        }
+      })();
     </script>
   </body>
 </html>

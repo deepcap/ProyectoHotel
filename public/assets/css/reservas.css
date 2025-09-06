@@ -251,3 +251,114 @@ th {
   position: relative;
   z-index: 1;
 }
+
+/* === Calendario (MVP) === */
+.calendar-legend {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0 12px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.pill--res {
+  background: #3b82f6;
+}
+
+/* reservada */
+.pill--run {
+  background: #22c55e;
+}
+
+/* en curso  */
+.pill--fin {
+  background: #64748b;
+}
+
+/* finalizada */
+.pill--can {
+  background: #ef4444;
+}
+
+/* cancelada */
+
+.cal-grid {
+  --cell: 36px;
+  overflow: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.cal-head,
+.cal-row {
+  display: grid;
+  grid-template-columns: repeat(7, var(--cell));
+  gap: 4px;
+  padding: 8px;
+}
+
+.cal-head .dow {
+  text-align: center;
+  font-weight: 700;
+  color: #475569;
+}
+
+.cal-month {
+  display: grid;
+  grid-template-rows: auto;
+  gap: 6px;
+  padding-bottom: 8px;
+}
+
+.day {
+  width: var(--cell);
+  height: var(--cell);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
+  position: relative;
+  background: #f8fafc;
+}
+
+.day .n {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  color: #64748b;
+}
+
+.day .chips {
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  right: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.chip {
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.chip--res {
+  background: #3b82f6;
+}
+
+.chip--run {
+  background: #22c55e;
+}
