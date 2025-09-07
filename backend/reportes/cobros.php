@@ -1,23 +1,12 @@
 <?php
 declare(strict_types=1);
-header('Content-Type: text/html; charset=UTF-8');
-
-ini_set('display_errors','1');
-error_reporting(E_ALL);
+ini_set('display_errors','1'); error_reporting(E_ALL);
 
 require __DIR__ . '/../config/db.php';
-// Si usas sesiones reales, aquí incluirías require_login.php
 
-/*
-  Columnas esperadas (según tu PDF):
-  - ID cobro
-  - Fecha transacción
-  - Monto
-  - Método de pago
-  - Ticket
-  - Cliente (nombre completo)
-  - Habitación (número)
-*/
+header('Content-Type: text/html; charset=UTF-8');
+
+// Consulta cobros con datos relacionados
 $sql = "SELECT 
   cbr.id_cobro,
   cbr.fecha_transaccion,
@@ -36,33 +25,27 @@ ORDER BY cbr.fecha_transaccion DESC";
 
 $res = $mysqli->query($sql);
 
-if(!$res){
-  http_response_code(500);
-  echo '<tr><td class="empty" colspan="7">Error al consultar</td></tr>';
-  exit;
-}
-
-if($res->num_rows === 0){
-  echo '<tr><td class="empty" colspan="7">Sin resultados</td></tr>';
-  exit;
+if (!$res || $res->num_rows === 0) {
+    echo '<tr><td class="empty" colspan="7">Sin resultados</td></tr>';
+    exit;
 }
 
 while($row = $res->fetch_assoc()){
-  $id     = (int)$row['id_cobro'];
-  $fecha  = htmlspecialchars(substr((string)$row['fecha_transaccion'],0,19), ENT_QUOTES, 'UTF-8');
-  $monto  = number_format((float)$row['monto'], 2);
-  $metodo = htmlspecialchars((string)$row['metodo_pago'], ENT_QUOTES, 'UTF-8');
-  $ticket = htmlspecialchars((string)$row['numero_ticket'], ENT_QUOTES, 'UTF-8');
-  $cliente= htmlspecialchars((string)$row['cliente'], ENT_QUOTES, 'UTF-8');
-  $hab    = htmlspecialchars((string)$row['numero_habitacion'], ENT_QUOTES, 'UTF-8');
+    $id   = (int)$row['id_cobro'];
+    $fecha= htmlspecialchars(substr($row['fecha_transaccion'],0,19), ENT_QUOTES, 'UTF-8');
+    $monto= '$'.number_format((float)$row['monto'],2).' MXN'; // 👈 añadimos MXN
+    $met  = htmlspecialchars($row['metodo_pago'], ENT_QUOTES, 'UTF-8');
+    $tic  = htmlspecialchars($row['numero_ticket'], ENT_QUOTES, 'UTF-8');
+    $cli  = htmlspecialchars($row['cliente'], ENT_QUOTES, 'UTF-8');
+    $hab  = htmlspecialchars($row['numero_habitacion'], ENT_QUOTES, 'UTF-8');
 
-  echo "<tr>";
-  echo "<td>{$id}</td>";
-  echo "<td>{$fecha}</td>";
-  echo "<td class=\"num\">{$monto}</td>";
-  echo "<td>{$metodo}</td>";
-  echo "<td>{$ticket}</td>";
-  echo "<td>{$cliente}</td>";
-  echo "<td>{$hab}</td>";
-  echo "</tr>";
+    echo "<tr>
+      <td>{$id}</td>
+      <td>{$fecha}</td>
+      <td class='num'>{$monto}</td>
+      <td>{$met}</td>
+      <td>{$tic}</td>
+      <td>{$cli}</td>
+      <td>{$hab}</td>
+    </tr>";
 }

@@ -2,56 +2,52 @@
 declare(strict_types=1);
 header('Content-Type: application/json; charset=UTF-8');
 ini_set('display_errors','1'); error_reporting(E_ALL);
+date_default_timezone_set('America/Mexico_City');
 
 require __DIR__ . '/../config/db.php';
 
-$in  = $_GET['check_in']  ?? '';
-$out = $_GET['check_out'] ?? '';
-
-$reDate = '/^\d{4}-\d{2}-\d{2}$/';
-if (!preg_match($reDate,$in) || !preg_match($reDate,$out) || $in >= $out) {
-  echo json_encode(['ok'=>false,'msg'=>'Rango de fechas inválido'], JSON_UNESCAPED_UNICODE);
-  exit;
+$in  = trim($_GET['check_in']  ?? '');
+$out = trim($_GET['check_out'] ?? '');
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/',$in) || !preg_match('/^\d{4}-\d{2}-\d{2}$/',$out)) {
+  http_response_code(400);
+  echo json_encode(['ok'=>false,'msg'=>'Fechas inválidas']); exit;
 }
 
-// Convertimos a DATETIME con mismas horas que usarás al crear
-$inDT  = $in  . ' 15:00:00';
-$outDT = $out . ' 12:00:00';
+$ci = (new DateTime($in.' 15:00:00'))->format('Y-m-d H:i:s');  // 3pm
+$co = (new DateTime($out.' 11:00:00'))->format('Y-m-d H:i:s'); // 11am
 
-// Traemos habitaciones
-$sqlH = "SELECT id_habitacion, numero_habitacion, tipo_habitacion, cantidad_personas, precio FROM Habitacion ORDER BY numero_habitacion ASC";
-$rh   = $mysqli->query($sqlH);
-if (!$rh) {
-  echo json_encode(['ok'=>false,'msg'=>'Error al consultar habitaciones'], JSON_UNESCAPED_UNICODE);
-  exit;
-}
-
-$data = [];
-while ($h = $rh->fetch_assoc()) {
-  $id_hab = (int)$h['id_habitacion'];
-
-  // ¿Existe traslape en este rango?
-  $sqlO = "
+// Para cada habitación, indicamos si hay traslape con alguna reserva (CIO)
+$sql = "
+SELECT
+  h.id_habitacion,
+  h.numero_habitacion AS numero,
+  h.tipo_habitacion   AS tipo,
+  h.cantidad_personas AS personas,
+  h.precio,
+  CASE WHEN EXISTS (
     SELECT 1
     FROM Reservacion r
-    JOIN CheckInOut cio ON cio.id_reservacion = r.id_reservacion
-    WHERE r.id_habitacion = ?
-      AND NOT (cio.hora_salida <= ? OR cio.hora_entrada >= ?)
-    LIMIT 1";
-  $st = $mysqli->prepare($sqlO);
-  $st->bind_param('iss', $id_hab, $inDT, $outDT);
-  $st->execute();
-  $busy = (bool)$st->get_result()->fetch_row();
-  $st->close();
-
-  $data[] = [
-    'id_habitacion' => $id_hab,
-    'numero'        => (int)$h['numero_habitacion'],
-    'tipo'          => $h['tipo_habitacion'],
-    'personas'      => (int)$h['cantidad_personas'],
-    'precio'        => (float)$h['precio'],
-    'disponible'    => !$busy
-  ];
+    JOIN CheckInOut  c ON c.id_reservacion = r.id_reservacion
+    WHERE r.id_habitacion = h.id_habitacion
+      AND c.hora_entrada < ?                               -- entrada_exist < salida_nueva
+      AND COALESCE(c.hora_salida,'9999-12-31 23:59:59') > ? -- salida_exist > entrada_nueva
+  )
+  THEN 0 ELSE 1 END AS disponible
+FROM Habitacion h
+ORDER BY h.numero_habitacion ASC
+";
+$stmt = $mysqli->prepare($sql);
+$stmt->bind_param('ss',$co,$ci);
+$stmt->execute();
+$res = $stmt->get_result();
+$data = [];
+while ($row = $res->fetch_assoc()) {
+  $row['id_habitacion'] = (int)$row['id_habitacion'];
+  $row['personas']      = (int)$row['personas'];
+  $row['precio']        = (float)$row['precio'];
+  $row['disponible']    = (bool)$row['disponible'];
+  $data[] = $row;
 }
+$stmt->close();
 
-echo json_encode(['ok'=>true,'data'=>$data], JSON_UNESCAPED_UNICODE);
+echo json_encode(['ok'=>true,'data'=>$data]);
