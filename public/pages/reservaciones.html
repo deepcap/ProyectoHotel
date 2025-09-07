@@ -136,6 +136,16 @@
                 <p class="muted">* Montos de ejemplo por reservación.</p>
               </fieldset>
 
+              <div class="field" style="grid-column: 1/-1">
+                <label>Forma de pago (preferida)</label>
+                <select id="r_pago">
+                  <option value="">Cargando métodos…</option>
+                </select>
+                <small class="muted"
+                  >Se usará como sugerencia al generar el ticket.</small
+                >
+              </div>
+
               <!-- Cálculos -->
               <div class="grid-3" style="grid-column: 1/-1">
                 <div class="field">
@@ -400,10 +410,12 @@
     <script>
       const selCliente = document.getElementById("r_cliente");
       const selHab2 = document.getElementById("r_habitacion"); // alias local
+      const selPago = document.getElementById("r_pago");
 
       (async () => {
         await fillSelect(selCliente, "/backend/clientes/opciones.php");
         await fillSelect(selHab2, "/backend/habitaciones/opciones.php");
+        await fillSelect(selPago, "/backend/pagos/opciones.php");
 
         // Preseleccionar la primera opción válida y disparar el preview:
         const first = [...selHab2.options].find((o) => o.value);

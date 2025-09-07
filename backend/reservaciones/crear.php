@@ -143,3 +143,9 @@ try {
   http_response_code(500);
   echo json_encode(['ok'=>false,'msg'=>'Error al crear la reservación']);
 }
+
+$id_tipo_pago = trim($_POST['id_tipo_pago'] ?? ''); // puede venir vacío
+if ($id_tipo_pago !== '' && !ctype_digit($id_tipo_pago)) {
+    $id_tipo_pago = ''; // sanea si no es numérico
+}
+// Por ahora NO se inserta; lo tendrás disponible si luego decides guardarlo
