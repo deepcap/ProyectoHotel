@@ -63,14 +63,14 @@
             <form class="form-grid" id="frmReservar" autocomplete="off">
               <!-- Identificación -->
               <div class="field">
-                <label>Cliente</label>
+                <label for="r_cliente">Cliente</label>
                 <select id="r_cliente" required>
                   <option value="">Cargando clientes…</option>
                 </select>
               </div>
 
               <div class="field">
-                <label>Habitación</label>
+                <label for="r_habitacion">Habitación</label>
                 <select id="r_habitacion" required>
                   <option value="">Cargando habitaciones…</option>
                 </select>
@@ -79,12 +79,22 @@
               <!-- Fechas -->
               <div class="grid-2" style="grid-column: 1/-1">
                 <div class="field">
-                  <label>Check-in</label>
+                  <label for="r_checkin">Check-in</label>
                   <input type="date" id="r_checkin" required />
                 </div>
                 <div class="field">
-                  <label>Check-out</label>
-                  <input type="date" id="r_checkout" required />
+                  <label for="r_checkout">Check-out</label>
+                  <input
+                    type="date"
+                    id="r_checkout"
+                    required
+                    aria-describedby="r_checkout_msg"
+                  />
+                  <small
+                    id="r_checkout_msg"
+                    class="muted"
+                    aria-live="polite"
+                  ></small>
                 </div>
               </div>
 
@@ -137,7 +147,7 @@
               </fieldset>
 
               <div class="field" style="grid-column: 1/-1">
-                <label>Forma de pago (preferida)</label>
+                <label for="r_pago">Forma de pago (preferida)</label>
                 <select id="r_pago">
                   <option value="">Cargando métodos…</option>
                 </select>
@@ -149,21 +159,21 @@
               <!-- Cálculos -->
               <div class="grid-3" style="grid-column: 1/-1">
                 <div class="field">
-                  <label>Noches</label>
+                  <label for="r_noches">Noches</label>
                   <input id="r_noches" disabled placeholder="—" />
                 </div>
                 <div class="field">
-                  <label>Tarifa estimada (noche)</label>
+                  <label for="r_tarifa">Tarifa estimada (noche)</label>
                   <input id="r_tarifa" disabled placeholder="—" />
                 </div>
                 <div class="field">
-                  <label>Total estimado</label>
+                  <label for="r_total">Total estimado</label>
                   <input id="r_total" disabled placeholder="—" />
                 </div>
               </div>
 
               <div class="field" style="grid-column: 1/-1">
-                <label>Notas (opcional)</label>
+                <label for="r_notas">Notas (opcional)</label>
                 <textarea
                   id="r_notas"
                   rows="3"
@@ -205,17 +215,17 @@
         <section id="tab-listado" class="section-card" style="display: none">
           <div class="tools">
             <div class="field">
-              <label>Buscar</label
+              <label for="l_q">Buscar</label
               ><input id="l_q" placeholder="Folio, cliente, habitación…" />
             </div>
             <div class="field">
-              <label>Desde</label><input type="date" id="l_desde" />
+              <label for="l_desde">Desde</label><input type="date" id="l_desde" />
             </div>
             <div class="field">
-              <label>Hasta</label><input type="date" id="l_hasta" />
+              <label for="l_hasta">Hasta</label><input type="date" id="l_hasta" />
             </div>
             <div class="field">
-              <label>Estado</label>
+              <label for="l_estado">Estado</label>
               <select id="l_estado">
                 <option value="">Todos</option>
                 <!-- Valores aceptados por backend/reservaciones/listar.php -->
@@ -264,10 +274,10 @@
         >
           <div class="tools">
             <div class="field">
-              <label>Check-in</label><input type="date" id="d_in" />
+              <label for="d_in">Check-in</label><input type="date" id="d_in" />
             </div>
             <div class="field">
-              <label>Check-out</label><input type="date" id="d_out" />
+              <label for="d_out">Check-out</label><input type="date" id="d_out" />
             </div>
             <button class="btn btn-secondary" id="d_btnVer" type="button">
               Ver disponibilidad
@@ -362,6 +372,39 @@
       document
         .querySelectorAll(".extra")
         .forEach((chk) => chk.addEventListener("change", updateTotal));
+
+      // inicio:fecha-salida
+      // El check-out debe ser al menos el día siguiente al check-in (el backend
+      // exige salida > entrada). Se calcula sobre "AAAA-MM-DD" en UTC para
+      // evitar desfases por zona horaria. No se toca el check-in ni se borra
+      // la fecha de salida elegida: si queda antes del mínimo, se avisa y el
+      // navegador impide enviar el formulario hasta corregirla.
+      function diaSiguiente(fechaISO) {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fechaISO || "");
+        if (!m) return "";
+        const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3] + 1));
+        return d.toISOString().slice(0, 10);
+      }
+
+      const $outMsg = document.getElementById("r_checkout_msg");
+      function actualizarMinSalida() {
+        const min = diaSiguiente($in.value);
+        if (min) $out.min = min;
+        else $out.removeAttribute("min");
+        const antesDelMinimo = Boolean(min && $out.value && $out.value < min);
+        $out.setAttribute("aria-invalid", antesDelMinimo ? "true" : "false");
+        $out.setCustomValidity(
+          antesDelMinimo
+            ? "La salida debe ser al menos un día después de la entrada."
+            : ""
+        );
+        $outMsg.textContent = antesDelMinimo
+          ? "La fecha de salida debe ser posterior a la de entrada. Elige una nueva fecha de salida."
+          : "";
+      }
+      $in.addEventListener("change", actualizarMinSalida);
+      $out.addEventListener("change", actualizarMinSalida);
+      // fin:fecha-salida
 
       function updateTotal() {
         const dIn = $in.value ? new Date($in.value) : null;
@@ -630,8 +673,15 @@
         }
         const inV = dIn.value;
         const outV = dOut.value;
-        if (inV) document.getElementById("r_checkin").value = inV;
-        if (outV) document.getElementById("r_checkout").value = outV;
+        // Se dispara "change" para recalcular la fecha mínima de salida y el total
+        if (inV) {
+          $in.value = inV;
+          $in.dispatchEvent(new Event("change"));
+        }
+        if (outV) {
+          $out.value = outV;
+          $out.dispatchEvent(new Event("change"));
+        }
       });
     </script>
 

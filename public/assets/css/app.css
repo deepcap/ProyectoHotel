@@ -305,6 +305,19 @@ button.btn:active {
   margin-left: 6px;
 }
 
+/* Texto solo para lectores de pantalla (p. ej. etiqueta del buscador) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Fila de estado de las tablas ("Sin resultados", "Error…"); también la
    genera backend/reservaciones/listar.php. */
 .empty {
