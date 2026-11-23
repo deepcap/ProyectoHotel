@@ -143,16 +143,20 @@
                     <small class="precio">$250</small>
                   </label>
                 </div>
-                <p class="muted">* Montos de ejemplo por reservación.</p>
+                <p class="muted">
+                  Importes estimados. Los servicios adicionales todavía no se
+                  registran con la reservación.
+                </p>
               </fieldset>
 
               <div class="field" style="grid-column: 1/-1">
                 <label for="r_pago">Forma de pago (preferida)</label>
-                <select id="r_pago">
+                <select id="r_pago" aria-describedby="r_pago_ayuda">
                   <option value="">Cargando métodos…</option>
                 </select>
-                <small class="muted"
-                  >Se usará como sugerencia al generar el ticket.</small
+                <small id="r_pago_ayuda" class="muted"
+                  >Información de referencia. La forma de pago todavía no se
+                  guarda.</small
                 >
               </div>
 
@@ -178,7 +182,11 @@
                   id="r_notas"
                   rows="3"
                   placeholder="Instrucciones especiales, comentarios…"
+                  aria-describedby="r_notas_ayuda"
                 ></textarea>
+                <small id="r_notas_ayuda" class="muted"
+                  >Las notas todavía no se guardan con la reservación.</small
+                >
               </div>
 
               <div class="actions actions-wrap">
