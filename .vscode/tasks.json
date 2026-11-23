@@ -1,0 +1,41 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Hotel Paraíso: iniciar servidor",
+      "detail": "php -S 127.0.0.1:8000 router.php (detener: Tareas > Finalizar tarea)",
+      "type": "process",
+      "command": "php",
+      "args": ["-S", "127.0.0.1:8000", "router.php"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "runOptions": {
+        "instanceLimit": 1
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true,
+        "showReuseMessage": false
+      },
+      "problemMatcher": {
+        "owner": "php-dev-server",
+        "severity": "warning",
+        "fileLocation": "absolute",
+        "pattern": {
+          "regexp": "PHP (?:Fatal error|Parse error|Warning|Deprecated|Notice):\\s+(.*) in (/.*) on line (\\d+)$",
+          "message": 1,
+          "file": 2,
+          "line": 3
+        },
+        "background": {
+          "activatesOnStart": true,
+          "beginsPattern": "Development Server \\(http://127\\.0\\.0\\.1:8000\\) started",
+          "endsPattern": "Development Server \\(http://127\\.0\\.0\\.1:8000\\) started"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+# =====================================================================
+# Hotel Paraíso - .gitignore
+# Nota: HotelBD.sql (esquema del proyecto) SÍ se versiona; no se ignora *.sql.
+# =====================================================================
+
+# ── macOS ────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+Icon?
+
+# ── Variables de entorno y secretos ──────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+auth.json
+
+# ── PHP / Composer / herramientas de calidad ────────────────────────
+/vendor/
+composer.phar
+.phpunit.result.cache
+.phpunit.cache/
+.php-cs-fixer.cache
+.phpstan.cache/
+
+# ── Logs ─────────────────────────────────────────────────────────────
+/logs/*
+!/logs/.gitkeep
+*.log
+
+# ── Temporales ───────────────────────────────────────────────────────
+/tmp/
+*.tmp
+*.swp
+*.swo
+*~
+
+# ── Respaldos de base de datos (guardarlos fuera del repo) ──────────
+/backups/
+/respaldos/
+*.sql.gz
+*.sql.zip
+*.sql.bak
+*.dump
+*.bak
+HotelDB-*.sql
+HotelDB-*.sql.sha256
+
+# ── Editores ─────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/

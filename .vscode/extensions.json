@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "bmewburn.vscode-intelephense-client",
+    "mtxr.sqltools",
+    "mtxr.sqltools-driver-mysql",
+    "ecmel.vscode-html-css"
+  ],
+  "unwantedRecommendations": [
+    "ritwickdey.liveserver",
+    "yandeu.five-server"
+  ]
+}
