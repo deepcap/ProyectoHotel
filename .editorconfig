@@ -1,0 +1,61 @@
+# Hotel Paraíso — EditorConfig (https://editorconfig.org)
+#
+# Criterio: solo se activan reglas que NO cambian los archivos existentes al guardarlos.
+#   - La indentación solo afecta a lo que se escribe; no reescribe archivos.
+#   - end_of_line, insert_final_newline y trim_trailing_whitespace se aplican al guardar,
+#     por eso se activan únicamente en los tipos de archivo que ya las cumplen.
+# Las reglas pendientes se activarán cuando se normalicen los archivos en un commit aparte.
+
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+
+# PHP: 4 espacios (PSR-12, estilo de los archivos más recientes).
+# Pendiente: 29 archivos sin salto de línea final y 5 con espacios al final de línea.
+[*.php]
+indent_size = 4
+end_of_line = lf
+
+# HTML: 2 espacios. No se fija end_of_line porque 4 páginas usan CRLF.
+[*.html]
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# CSS y JavaScript: 2 espacios.
+# Pendiente: insert_final_newline (ningún archivo CSS/JS termina con salto de línea).
+[*.{css,js}]
+end_of_line = lf
+trim_trailing_whitespace = true
+
+[*.json]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown: dos espacios al final de una línea significan salto de línea; no se recortan.
+[*.md]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = false
+
+# SQL. Pendiente: trim_trailing_whitespace (HotelBD.sql tiene líneas con espacios al final).
+[*.sql]
+end_of_line = lf
+insert_final_newline = true
+
+[{.editorconfig,.gitignore,.env.example}]
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Librería de terceros (FPDF): conserva su formato original (tabuladores y CRLF).
+[backend/lib/{fpdf.php,font/**}]
+charset = unset
+indent_style = unset
+indent_size = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
