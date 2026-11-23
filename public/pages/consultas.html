@@ -152,7 +152,7 @@
             <thead id="thead"></thead>
             <tbody id="tbody">
               <tr>
-                <td class="empty">Cargando…</td>
+                <td class="empty" colspan="7">Cargando…</td>
               </tr>
             </tbody>
           </table>
@@ -380,8 +380,20 @@
         loadRows();
       }
 
+      // Fila de estado (cargando / error / sin resultados) que ocupa todas las
+      // columnas de la pestaña activa.
+      function setMessageRow(texto) {
+        const td = document.createElement("td");
+        td.className = "empty";
+        td.colSpan = $thead.querySelectorAll("th").length || 1;
+        td.textContent = texto;
+        const tr = document.createElement("tr");
+        tr.appendChild(td);
+        $tbody.replaceChildren(tr);
+      }
+
       async function loadRows() {
-        $tbody.innerHTML = '<tr><td class="empty">Cargando…</td></tr>';
+        setMessageRow("Cargando…");
         const q = $search.value.trim();
         let url = "";
         if (TAB === "habitaciones") url = API.hab.listar;
@@ -391,12 +403,12 @@
 
         const res = await fetch(url, { headers: { Accept: "text/html" } });
         if (!res.ok) {
-          $tbody.innerHTML = '<tr><td class="empty">Error al cargar</td></tr>';
+          setMessageRow("Error al cargar");
           return;
         }
         const html = await res.text();
-        $tbody.innerHTML =
-          html || '<tr><td class="empty">Sin resultados</td></tr>';
+        if (html) $tbody.innerHTML = html; // HTML ya escapado por el backend
+        else setMessageRow("Sin resultados");
       }
 
       document.querySelectorAll(".btn-tab").forEach((btn) => {
