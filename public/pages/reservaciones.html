@@ -195,7 +195,6 @@
                   <span><i class="c-reservada"></i>Reservada</span>
                   <span><i class="c-checkin"></i>En curso</span>
                   <span><i class="c-checkout"></i>Finalizada</span>
-                  <span><i class="c-cancelada"></i>Cancelada</span>
                 </div>
               </div>
             </aside>
@@ -219,10 +218,10 @@
               <label>Estado</label>
               <select id="l_estado">
                 <option value="">Todos</option>
-                <option>RESERVADA</option>
-                <option>CHECKIN</option>
-                <option>CHECKOUT</option>
-                <option>CANCELADA</option>
+                <!-- Valores aceptados por backend/reservaciones/listar.php -->
+                <option value="RESERVADA">Reservada</option>
+                <option value="ENCURSO">En curso</option>
+                <option value="FINALIZADA">Finalizada</option>
               </select>
             </div>
             <button class="btn btn-secondary" id="l_btnBuscar" type="button">
