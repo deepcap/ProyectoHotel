@@ -260,3 +260,68 @@ button.btn:active {
 .page-padding {
   padding-top: 64px
 }
+
+/* Insignias de estado (las genera backend/reservaciones/listar.php y la
+   tabla de disponibilidad). Fondo claro + texto oscuro: contraste > 7:1. */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.badge-blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-green {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.badge-gray {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.badge-red {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+/* Celda de acciones de las tablas (td.actions-row generado por el backend).
+   Sin display:flex para no romper el layout de la tabla. */
+.actions-row {
+  white-space: nowrap;
+}
+
+.actions-row .btn + .btn {
+  margin-left: 6px;
+}
+
+/* Texto solo para lectores de pantalla (p. ej. etiqueta del buscador) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Fila de estado de las tablas ("Sin resultados", "Error…"); también la
+   genera backend/reservaciones/listar.php. */
+.empty {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+}

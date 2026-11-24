@@ -63,14 +63,14 @@
             <form class="form-grid" id="frmReservar" autocomplete="off">
               <!-- Identificación -->
               <div class="field">
-                <label>Cliente</label>
+                <label for="r_cliente">Cliente</label>
                 <select id="r_cliente" required>
                   <option value="">Cargando clientes…</option>
                 </select>
               </div>
 
               <div class="field">
-                <label>Habitación</label>
+                <label for="r_habitacion">Habitación</label>
                 <select id="r_habitacion" required>
                   <option value="">Cargando habitaciones…</option>
                 </select>
@@ -79,12 +79,22 @@
               <!-- Fechas -->
               <div class="grid-2" style="grid-column: 1/-1">
                 <div class="field">
-                  <label>Check-in</label>
+                  <label for="r_checkin">Check-in</label>
                   <input type="date" id="r_checkin" required />
                 </div>
                 <div class="field">
-                  <label>Check-out</label>
-                  <input type="date" id="r_checkout" required />
+                  <label for="r_checkout">Check-out</label>
+                  <input
+                    type="date"
+                    id="r_checkout"
+                    required
+                    aria-describedby="r_checkout_msg"
+                  />
+                  <small
+                    id="r_checkout_msg"
+                    class="muted"
+                    aria-live="polite"
+                  ></small>
                 </div>
               </div>
 
@@ -133,42 +143,50 @@
                     <small class="precio">$250</small>
                   </label>
                 </div>
-                <p class="muted">* Montos de ejemplo por reservación.</p>
+                <p class="muted">
+                  Importes estimados. Los servicios adicionales todavía no se
+                  registran con la reservación.
+                </p>
               </fieldset>
 
               <div class="field" style="grid-column: 1/-1">
-                <label>Forma de pago (preferida)</label>
-                <select id="r_pago">
+                <label for="r_pago">Forma de pago (preferida)</label>
+                <select id="r_pago" aria-describedby="r_pago_ayuda">
                   <option value="">Cargando métodos…</option>
                 </select>
-                <small class="muted"
-                  >Se usará como sugerencia al generar el ticket.</small
+                <small id="r_pago_ayuda" class="muted"
+                  >Información de referencia. La forma de pago todavía no se
+                  guarda.</small
                 >
               </div>
 
               <!-- Cálculos -->
               <div class="grid-3" style="grid-column: 1/-1">
                 <div class="field">
-                  <label>Noches</label>
+                  <label for="r_noches">Noches</label>
                   <input id="r_noches" disabled placeholder="—" />
                 </div>
                 <div class="field">
-                  <label>Tarifa estimada (noche)</label>
+                  <label for="r_tarifa">Tarifa estimada (noche)</label>
                   <input id="r_tarifa" disabled placeholder="—" />
                 </div>
                 <div class="field">
-                  <label>Total estimado</label>
+                  <label for="r_total">Total estimado</label>
                   <input id="r_total" disabled placeholder="—" />
                 </div>
               </div>
 
               <div class="field" style="grid-column: 1/-1">
-                <label>Notas (opcional)</label>
+                <label for="r_notas">Notas (opcional)</label>
                 <textarea
                   id="r_notas"
                   rows="3"
                   placeholder="Instrucciones especiales, comentarios…"
+                  aria-describedby="r_notas_ayuda"
                 ></textarea>
+                <small id="r_notas_ayuda" class="muted"
+                  >Las notas todavía no se guardan con la reservación.</small
+                >
               </div>
 
               <div class="actions actions-wrap">
@@ -195,7 +213,6 @@
                   <span><i class="c-reservada"></i>Reservada</span>
                   <span><i class="c-checkin"></i>En curso</span>
                   <span><i class="c-checkout"></i>Finalizada</span>
-                  <span><i class="c-cancelada"></i>Cancelada</span>
                 </div>
               </div>
             </aside>
@@ -206,23 +223,23 @@
         <section id="tab-listado" class="section-card" style="display: none">
           <div class="tools">
             <div class="field">
-              <label>Buscar</label
+              <label for="l_q">Buscar</label
               ><input id="l_q" placeholder="Folio, cliente, habitación…" />
             </div>
             <div class="field">
-              <label>Desde</label><input type="date" id="l_desde" />
+              <label for="l_desde">Desde</label><input type="date" id="l_desde" />
             </div>
             <div class="field">
-              <label>Hasta</label><input type="date" id="l_hasta" />
+              <label for="l_hasta">Hasta</label><input type="date" id="l_hasta" />
             </div>
             <div class="field">
-              <label>Estado</label>
+              <label for="l_estado">Estado</label>
               <select id="l_estado">
                 <option value="">Todos</option>
-                <option>RESERVADA</option>
-                <option>CHECKIN</option>
-                <option>CHECKOUT</option>
-                <option>CANCELADA</option>
+                <!-- Valores aceptados por backend/reservaciones/listar.php -->
+                <option value="RESERVADA">Reservada</option>
+                <option value="ENCURSO">En curso</option>
+                <option value="FINALIZADA">Finalizada</option>
               </select>
             </div>
             <button class="btn btn-secondary" id="l_btnBuscar" type="button">
@@ -265,10 +282,10 @@
         >
           <div class="tools">
             <div class="field">
-              <label>Check-in</label><input type="date" id="d_in" />
+              <label for="d_in">Check-in</label><input type="date" id="d_in" />
             </div>
             <div class="field">
-              <label>Check-out</label><input type="date" id="d_out" />
+              <label for="d_out">Check-out</label><input type="date" id="d_out" />
             </div>
             <button class="btn btn-secondary" id="d_btnVer" type="button">
               Ver disponibilidad
@@ -363,6 +380,39 @@
       document
         .querySelectorAll(".extra")
         .forEach((chk) => chk.addEventListener("change", updateTotal));
+
+      // inicio:fecha-salida
+      // El check-out debe ser al menos el día siguiente al check-in (el backend
+      // exige salida > entrada). Se calcula sobre "AAAA-MM-DD" en UTC para
+      // evitar desfases por zona horaria. No se toca el check-in ni se borra
+      // la fecha de salida elegida: si queda antes del mínimo, se avisa y el
+      // navegador impide enviar el formulario hasta corregirla.
+      function diaSiguiente(fechaISO) {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(fechaISO || "");
+        if (!m) return "";
+        const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3] + 1));
+        return d.toISOString().slice(0, 10);
+      }
+
+      const $outMsg = document.getElementById("r_checkout_msg");
+      function actualizarMinSalida() {
+        const min = diaSiguiente($in.value);
+        if (min) $out.min = min;
+        else $out.removeAttribute("min");
+        const antesDelMinimo = Boolean(min && $out.value && $out.value < min);
+        $out.setAttribute("aria-invalid", antesDelMinimo ? "true" : "false");
+        $out.setCustomValidity(
+          antesDelMinimo
+            ? "La salida debe ser al menos un día después de la entrada."
+            : ""
+        );
+        $outMsg.textContent = antesDelMinimo
+          ? "La fecha de salida debe ser posterior a la de entrada. Elige una nueva fecha de salida."
+          : "";
+      }
+      $in.addEventListener("change", actualizarMinSalida);
+      $out.addEventListener("change", actualizarMinSalida);
+      // fin:fecha-salida
 
       function updateTotal() {
         const dIn = $in.value ? new Date($in.value) : null;
@@ -527,6 +577,65 @@
       const dBtn = document.getElementById("d_btnVer");
       const dBody = document.getElementById("d_tbody");
 
+      // inicio:render-disponibilidad
+      // Fila de mensaje (cargando / error / vacío), siempre como texto.
+      function filaMensaje(texto) {
+        const td = document.createElement("td");
+        td.colSpan = 6;
+        td.className = "center muted";
+        td.textContent = texto;
+        const tr = document.createElement("tr");
+        tr.appendChild(td);
+        dBody.replaceChildren(tr);
+      }
+
+      // Construye la tabla con nodos del DOM y textContent: ningún dato del
+      // servidor se interpreta como HTML (evita XSS, p. ej. en el tipo).
+      function renderDisponibilidad(filas) {
+        const frag = document.createDocumentFragment();
+        for (const h of filas) {
+          const tr = document.createElement("tr");
+          const celdaTexto = (texto) => {
+            const td = document.createElement("td");
+            td.textContent = texto;
+            tr.appendChild(td);
+          };
+          const celdaNodo = (nodo) => {
+            const td = document.createElement("td");
+            td.appendChild(nodo);
+            tr.appendChild(td);
+          };
+
+          const estado = document.createElement("span");
+          estado.className = h.disponible ? "badge badge-green" : "badge badge-red";
+          estado.textContent = h.disponible ? "Libre" : "Ocupada";
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          if (h.disponible) {
+            btn.className = "btn btn-primary";
+            btn.dataset.act = "reservar";
+            btn.dataset.id = String(h.id_habitacion);
+            btn.dataset.num = String(h.numero);
+            btn.textContent = "Reservar";
+          } else {
+            btn.className = "btn btn-secondary";
+            btn.disabled = true;
+            btn.textContent = "No disponible";
+          }
+
+          celdaTexto(`#${h.numero}`);
+          celdaTexto(String(h.tipo));
+          celdaTexto(String(h.personas));
+          celdaTexto(`$${Number(h.precio).toFixed(2)}`);
+          celdaNodo(estado);
+          celdaNodo(btn);
+          frag.appendChild(tr);
+        }
+        dBody.replaceChildren(frag);
+      }
+      // fin:render-disponibilidad
+
       dBtn.addEventListener("click", async () => {
         const inV = dIn.value;
         const outV = dOut.value;
@@ -535,7 +644,7 @@
           return;
         }
 
-        dBody.innerHTML = `<tr><td colspan="6" class="center muted">Cargando…</td></tr>`;
+        filaMensaje("Cargando…");
         try {
           const res = await fetch(
             `/backend/reservaciones/disponibles.php?check_in=${encodeURIComponent(
@@ -544,38 +653,18 @@
           );
           const data = await res.json();
           if (!data.ok) {
-            dBody.innerHTML = `<tr><td colspan="6" class="center muted">${
-              data.msg || "Error"
-            }</td></tr>`;
+            filaMensaje(data.msg || "Error");
             return;
           }
 
           if (!data.data.length) {
-            dBody.innerHTML = `<tr><td colspan="6" class="center muted">Sin habitaciones</td></tr>`;
+            filaMensaje("Sin habitaciones");
             return;
           }
 
-          dBody.innerHTML = data.data
-            .map((h) => {
-              const estado = h.disponible
-                ? '<span class="badge" style="background:#22c55e;color:#fff">Libre</span>'
-                : '<span class="badge" style="background:#ef4444;color:#fff">Ocupada</span>';
-              const btn = h.disponible
-                ? `<button class="btn btn-primary" data-act="reservar" data-id="${h.id_habitacion}" data-num="${h.numero}">Reservar</button>`
-                : `<button class="btn btn-secondary" disabled>No disponible</button>`;
-
-              return `<tr>
-              <td>#${h.numero}</td>
-              <td>${h.tipo}</td>
-              <td>${h.personas}</td>
-              <td>$${Number(h.precio).toFixed(2)}</td>
-              <td>${estado}</td>
-              <td>${btn}</td>
-            </tr>`;
-            })
-            .join("");
+          renderDisponibilidad(data.data);
         } catch (e) {
-          dBody.innerHTML = `<tr><td colspan="6" class="center muted">Error al consultar</td></tr>`;
+          filaMensaje("Error al consultar");
         }
       });
 
@@ -592,8 +681,15 @@
         }
         const inV = dIn.value;
         const outV = dOut.value;
-        if (inV) document.getElementById("r_checkin").value = inV;
-        if (outV) document.getElementById("r_checkout").value = outV;
+        // Se dispara "change" para recalcular la fecha mínima de salida y el total
+        if (inV) {
+          $in.value = inV;
+          $in.dispatchEvent(new Event("change"));
+        }
+        if (outV) {
+          $out.value = outV;
+          $out.dispatchEvent(new Event("change"));
+        }
       });
     </script>
 

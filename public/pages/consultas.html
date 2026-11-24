@@ -106,7 +106,6 @@
       <div class="nav-links">
         <a href="/public/index.html">Inicio</a>
         <a href="/public/pages/menu-completo.html">Menú</a>
-        <a href="#">Ayuda</a>
       </div>
     </nav>
 
@@ -142,6 +141,7 @@
             <button class="btn-tab" data-tab="clientes">Clientes</button>
           </div>
           <div class="search">
+            <label for="txtSearch" class="sr-only">Buscar registros</label>
             <input id="txtSearch" type="search" placeholder="Buscar…" />
             <button id="btnSearch" class="btn btn-secondary">Buscar</button>
           </div>
@@ -152,7 +152,7 @@
             <thead id="thead"></thead>
             <tbody id="tbody">
               <tr>
-                <td class="empty">Cargando…</td>
+                <td class="empty" colspan="7">Cargando…</td>
               </tr>
             </tbody>
           </table>
@@ -162,17 +162,22 @@
 
     <!-- Modal EDITAR HABITACIÓN -->
     <div class="modal-backdrop" id="modalHabitacion">
-      <div class="modal">
-        <h3>Editar habitación</h3>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ttlModalHabitacion"
+      >
+        <h3 id="ttlModalHabitacion">Editar habitación</h3>
         <form id="frmHabitacion" class="form-grid">
           <input type="hidden" id="h_id" name="id_habitacion" />
           <div class="form-grid two">
             <div class="field">
-              <label>Número</label>
+              <label for="h_numero">Número</label>
               <input type="number" id="h_numero" name="numero" required />
             </div>
             <div class="field">
-              <label>Precio</label>
+              <label for="h_precio">Precio</label>
               <input
                 type="number"
                 step="0.01"
@@ -184,7 +189,7 @@
           </div>
           <div class="form-grid two">
             <div class="field">
-              <label>Tipo</label>
+              <label for="h_tipo">Tipo</label>
               <select id="h_tipo" name="tipo" required>
                 <option value="">--Selecciona--</option>
                 <option>Sencilla</option>
@@ -194,7 +199,7 @@
               </select>
             </div>
             <div class="field">
-              <label>Estado</label>
+              <label for="h_estado">Estado</label>
               <select id="h_estado" name="estado" required>
                 <option value="">--Selecciona--</option>
                 <option>Disponible</option>
@@ -204,7 +209,7 @@
             </div>
           </div>
           <div class="field">
-            <label>Capacidad</label>
+            <label for="h_personas">Capacidad</label>
             <input type="number" id="h_personas" name="personas" required />
           </div>
           <div class="modal-actions">
@@ -223,39 +228,44 @@
 
     <!-- Modal EDITAR EMPLEADO -->
     <div class="modal-backdrop" id="modalEmpleado">
-      <div class="modal">
-        <h3>Editar empleado</h3>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ttlModalEmpleado"
+      >
+        <h3 id="ttlModalEmpleado">Editar empleado</h3>
         <form id="frmEmpleado" class="form-grid">
           <input type="hidden" id="e_id" name="id_empleado" />
           <div class="form-grid two">
             <div class="field">
-              <label>Nombre</label>
+              <label for="e_nombre">Nombre</label>
               <input type="text" id="e_nombre" name="nombre" required />
             </div>
             <div class="field">
-              <label>Teléfono</label>
+              <label for="e_telefono">Teléfono</label>
               <input type="tel" id="e_telefono" name="telefono" required />
             </div>
           </div>
           <div class="form-grid two">
             <div class="field">
-              <label>Apellido paterno</label>
+              <label for="e_apellidoP">Apellido paterno</label>
               <input type="text" id="e_apellidoP" name="apellidoP" required />
             </div>
             <div class="field">
-              <label>Apellido materno</label>
+              <label for="e_apellidoM">Apellido materno</label>
               <input type="text" id="e_apellidoM" name="apellidoM" />
             </div>
           </div>
           <div class="form-grid two">
             <div class="field">
-              <label>Área</label>
+              <label for="e_area">Área</label>
               <select id="e_area" name="area" required>
                 <option value="">Cargando áreas…</option>
               </select>
             </div>
             <div class="field">
-              <label>Turno</label>
+              <label for="e_turno">Turno</label>
               <select id="e_turno" name="turno" required>
                 <option value="">Selecciona</option>
                 <option value="1">Mañana</option>
@@ -280,30 +290,35 @@
 
     <!-- Modal EDITAR CLIENTE -->
     <div class="modal-backdrop" id="modalCliente">
-      <div class="modal">
-        <h3>Editar cliente</h3>
+      <div
+        class="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ttlModalCliente"
+      >
+        <h3 id="ttlModalCliente">Editar cliente</h3>
         <form id="frmCliente" class="form-grid">
           <input type="hidden" id="c_id" name="id_cliente" />
           <div class="field">
-            <label>Nombre</label><input id="c_nombre" name="nombre" required />
+            <label for="c_nombre">Nombre</label><input id="c_nombre" name="nombre" required />
           </div>
           <div class="form-grid two">
             <div class="field">
-              <label>Apellido paterno</label
+              <label for="c_ap_pat">Apellido paterno</label
               ><input id="c_ap_pat" name="apellido_paterno" required />
             </div>
             <div class="field">
-              <label>Apellido materno</label
+              <label for="c_ap_mat">Apellido materno</label
               ><input id="c_ap_mat" name="apellido_materno" />
             </div>
           </div>
           <div class="form-grid two">
             <div class="field">
-              <label>Teléfono</label
+              <label for="c_tel">Teléfono</label
               ><input id="c_tel" name="telefono" required />
             </div>
             <div class="field">
-              <label>Correo</label
+              <label for="c_correo">Correo</label
               ><input id="c_correo" name="correo" type="email" />
             </div>
           </div>
@@ -380,8 +395,20 @@
         loadRows();
       }
 
+      // Fila de estado (cargando / error / sin resultados) que ocupa todas las
+      // columnas de la pestaña activa.
+      function setMessageRow(texto) {
+        const td = document.createElement("td");
+        td.className = "empty";
+        td.colSpan = $thead.querySelectorAll("th").length || 1;
+        td.textContent = texto;
+        const tr = document.createElement("tr");
+        tr.appendChild(td);
+        $tbody.replaceChildren(tr);
+      }
+
       async function loadRows() {
-        $tbody.innerHTML = '<tr><td class="empty">Cargando…</td></tr>';
+        setMessageRow("Cargando…");
         const q = $search.value.trim();
         let url = "";
         if (TAB === "habitaciones") url = API.hab.listar;
@@ -391,12 +418,12 @@
 
         const res = await fetch(url, { headers: { Accept: "text/html" } });
         if (!res.ok) {
-          $tbody.innerHTML = '<tr><td class="empty">Error al cargar</td></tr>';
+          setMessageRow("Error al cargar");
           return;
         }
         const html = await res.text();
-        $tbody.innerHTML =
-          html || '<tr><td class="empty">Sin resultados</td></tr>';
+        if (html) $tbody.innerHTML = html; // HTML ya escapado por el backend
+        else setMessageRow("Sin resultados");
       }
 
       document.querySelectorAll(".btn-tab").forEach((btn) => {
@@ -409,6 +436,82 @@
         clearTimeout(t);
         t = setTimeout(loadRows, 300);
       });
+
+      // --- Modales: apertura y cierre accesibles ----------------------------
+      // inicio:modales
+      const FOCUSABLES =
+        'input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])';
+      let modalAbierto = null;
+      let focoPrevio = null;
+
+      function abrirModal(id, origen) {
+        const backdrop = document.getElementById(id);
+        focoPrevio = origen || document.activeElement;
+        modalAbierto = backdrop;
+        backdrop.style.display = "flex";
+        const primero = backdrop.querySelector(FOCUSABLES);
+        if (primero) primero.focus();
+      }
+
+      // reenfocar=false cuando la tabla se va a volver a dibujar (tras guardar):
+      // el foco lo coloca enfocarFila() al terminar la recarga.
+      function cerrarModal(backdrop, reenfocar = true) {
+        backdrop.style.display = "none";
+        if (modalAbierto === backdrop) modalAbierto = null;
+        if (reenfocar) {
+          const destino =
+            focoPrevio && document.contains(focoPrevio) ? focoPrevio : $search;
+          destino.focus();
+          focoPrevio = null;
+        }
+      }
+
+      // Tras recargar la tabla, devuelve el foco al botón "Editar" de la fila
+      // editada o, si ya no existe, al buscador.
+      function enfocarFila(idFila) {
+        const b = idFila
+          ? $tbody.querySelector(
+              `button[data-act="editar"][data-id="${CSS.escape(idFila)}"]`
+            )
+          : null;
+        (b || $search).focus();
+        focoPrevio = null;
+      }
+
+      async function guardarYCerrar(backdropId) {
+        const idFila = focoPrevio && focoPrevio.dataset ? focoPrevio.dataset.id : "";
+        cerrarModal(document.getElementById(backdropId), false);
+        await loadRows();
+        enfocarFila(idFila);
+      }
+
+      document.addEventListener("keydown", (e) => {
+        if (!modalAbierto) return;
+        if (e.key === "Escape") {
+          e.preventDefault();
+          cerrarModal(modalAbierto);
+          return;
+        }
+        if (e.key === "Tab") {
+          // Mantiene el foco dentro del diálogo abierto
+          const items = [...modalAbierto.querySelectorAll(FOCUSABLES)];
+          if (!items.length) return;
+          const primero = items[0];
+          const ultimo = items[items.length - 1];
+          const activo = document.activeElement;
+          if (!modalAbierto.contains(activo)) {
+            e.preventDefault();
+            primero.focus();
+          } else if (e.shiftKey && activo === primero) {
+            e.preventDefault();
+            ultimo.focus();
+          } else if (!e.shiftKey && activo === ultimo) {
+            e.preventDefault();
+            primero.focus();
+          }
+        }
+      });
+      // fin:modales
 
       // Delegación de acciones por pestaña
       $tbody.addEventListener("click", async (e) => {
@@ -440,7 +543,7 @@
               btn.dataset.estado || "";
             document.getElementById("h_personas").value =
               btn.dataset.personas || "";
-            document.getElementById("modalHabitacion").style.display = "flex";
+            abrirModal("modalHabitacion", btn);
           }
         }
 
@@ -479,7 +582,7 @@
             if (btn.dataset.areaid)
               document.getElementById("e_area").value = btn.dataset.areaid;
             document.getElementById("e_turno").value = btn.dataset.turno || "";
-            document.getElementById("modalEmpleado").style.display = "flex";
+            abrirModal("modalEmpleado", btn);
           }
         }
 
@@ -524,7 +627,7 @@
               data.apellido_materno || "";
             document.getElementById("c_tel").value = data.telefono || "";
             document.getElementById("c_correo").value = data.correo || "";
-            document.getElementById("modalCliente").style.display = "flex";
+            abrirModal("modalCliente", btn);
           }
         }
       });
@@ -532,8 +635,7 @@
       // Cerrar modales
       document.querySelectorAll("[data-close]").forEach((b) =>
         b.addEventListener("click", () => {
-          document.querySelector(b.getAttribute("data-close")).style.display =
-            "none";
+          cerrarModal(document.querySelector(b.getAttribute("data-close")));
         })
       );
 
@@ -548,8 +650,7 @@
             body: fd,
           });
           if (!r.ok) return alert("Error al actualizar");
-          document.getElementById("modalHabitacion").style.display = "none";
-          loadRows();
+          await guardarYCerrar("modalHabitacion");
         });
 
       // Guardar edición empleado
@@ -563,8 +664,7 @@
             body: fd,
           });
           if (!r.ok) return alert("Error al actualizar");
-          document.getElementById("modalEmpleado").style.display = "none";
-          loadRows();
+          await guardarYCerrar("modalEmpleado");
         });
 
       // Guardar edición cliente
@@ -579,8 +679,7 @@
             body: fd,
           });
           if (!r.ok) return alert("Error al actualizar");
-          document.getElementById("modalCliente").style.display = "none";
-          loadRows();
+          await guardarYCerrar("modalCliente");
         });
 
       // Inicial

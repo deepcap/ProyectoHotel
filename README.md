@@ -94,6 +94,11 @@ git clone <URL-del-repositorio>
 cd ProyectoHotel
 ```
 
+> ⚠️ Clona el proyecto en una carpeta **que no se sincronice con la nube** (por ejemplo
+> `~/Proyectos`), no en Documentos, Escritorio, iCloud Drive ni Dropbox. Si el sistema
+> libera espacio enviando archivos a la nube, Git y PHP se bloquean al leerlos y la carpeta
+> `.git` puede dañarse.
+
 ### 2. Crear la base de datos
 
 > ⚠️ `HotelBD.sql` crea la base `HotelDB` e inserta datos de ejemplo. Ejecútalo **solo en un
@@ -200,7 +205,7 @@ a los módulos. Todas las páginas están en `public/pages/`.
 | Habitaciones | `habitacion.html` | Registrar habitaciones (número, tipo, estado, capacidad, precio) |
 | Empleados | `registro-empleado.html` | Registrar empleados con área y turno |
 | Consultas | `consultas.html` | Buscar, editar y eliminar habitaciones, empleados y clientes |
-| Reservaciones | `reservaciones.html` | Pestañas *Reservar*, *Disponibilidad* y *Listado* (filtros, check-out, eliminar) |
+| Reservaciones | `reservaciones.html` | Pestañas *Reservar*, *Disponibilidad* y *Listado*. El listado se filtra por texto, fechas y estado (*Reservada*, *En curso*, *Finalizada*) y permite check-out y eliminar |
 | Reportes | `reportes.html` | Cobros detallados, reservaciones y totales por fecha, en HTML y PDF (MXN) |
 
 ## Respaldo y restauración de la base de datos
@@ -270,7 +275,12 @@ El proyecto está en mejora por etapas. Estas son las limitaciones actuales más
   saltar desde la consola del navegador.
 - **Los endpoints del backend no verifican ninguna sesión.** Cualquiera que llegue al servidor
   puede consultar, crear, modificar o eliminar datos. No hay protección CSRF.
-- `auth.js` solo se incluye en el menú y en las páginas de reportes; el resto de páginas no lo cargan.
+- `auth.js` solo se carga en `menu-completo.html` (en las páginas de reportes está comentado);
+  el resto de páginas no comprueba ni siquiera la sesión de demostración.
+- Los enlaces "¿Olvidaste tu contraseña?" (`login.html`) y "Salir" (`menu-completo.html`, que
+  usa `href="#"` con un `onclick`) se revisarán junto con la autenticación real.
+- `habitaciones/actualizar.php` acepta cualquier texto como tipo de habitación. La interfaz lo
+  muestra siempre como texto (sin interpretarlo como HTML), pero el servidor aún no lo valida.
 - Los endpoints activan `display_errors`, por lo que algunos errores de PHP o MySQL pueden mostrarse.
 - **No expongas este servidor fuera de tu equipo** hasta completar la etapa de seguridad.
 
@@ -279,8 +289,12 @@ El proyecto está en mejora por etapas. Estas son las limitaciones actuales más
 - **La fecha de salida no se guarda.** Se usa para comprobar la disponibilidad, pero la
   reservación queda sin salida: la habitación se considera ocupada hasta que se registra el check-out.
 - Las noches y el total del listado se calculan hasta la fecha actual, no con la estancia reservada.
-- **La forma de pago elegida al reservar no se guarda**, y la interfaz no registra tickets ni cobros:
-  los reportes de cobros solo muestran los registros que ya existen en la base.
+- **Los servicios extra, la forma de pago y las notas del formulario de reserva no se guardan.**
+  El formulario lo indica junto a cada campo; los importes de los servicios son estimaciones.
+  La interfaz tampoco registra tickets ni cobros: los reportes de cobros solo muestran los
+  registros que ya existen en la base.
+- El listado solo muestra las reservaciones que tienen registro en `CheckInOut`; una reservación
+  sin ese registro no aparece.
 - `reservaciones/checkin.php` existe, pero ninguna pantalla lo utiliza.
 - La disponibilidad se comprueba fuera de la transacción: dos reservaciones simultáneas podrían
   traslaparse.
